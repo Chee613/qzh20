@@ -1,0 +1,163 @@
+import type { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
+
+import { getRequestIp, logAuditEvent } from "@/lib/audit";
+import { loginBodySchema } from "@/lib/auth/login-schema";
+import { consumeLoginAttempt, resetLoginAttempts } from "@/lib/auth/rate-limit";
+import { verifyBirthdayPassword } from "@/lib/auth/password";
+import { createSessionToken, setSessionCookie } from "@/lib/auth/session";
+import { getSupabaseAdminClient } from "@/lib/supabase/server";
+
+export async function POST(request: NextRequest) {
+  const requestIp = getRequestIp(request);
+
+  let body: unknown;
+
+  try {
+    body = await request.json();
+  } catch {
+    logAuditEvent(
+      "auth.login.bad_request",
+      { ip: requestIp },
+      "warn"
+    );
+    return NextResponse.json({ error: "Invalid request body." }, { status: 400 });
+  }
+
+  const parsed = loginBodySchema.safeParse(body);
+  if (!parsed.success) {
+    logAuditEvent(
+      "auth.login.invalid_format",
+      { ip: requestIp },
+      "warn"
+    );
+    return NextResponse.json(
+      { error: "Invalid credentials format." },
+      { status: 400 }
+    );
+  }
+
+  const { loginId, birthdayPassword } = parsed.data;
+  const rateLimitKey = `${requestIp}:${loginId}`;
+
+  const rateLimitResult = consumeLoginAttempt(rateLimitKey);
+  if (rateLimitResult.limited) {
+    logAuditEvent(
+      "auth.login.rate_limited",
+      {
+        ip: requestIp,
+        loginId,
+        retryAfterSeconds: rateLimitResult.retryAfterSeconds,
+      },
+      "warn"
+    );
+    return NextResponse.json(
+      { error: "Too many login attempts. Please try again later." },
+      {
+        status: 429,
+        headers: {
+          "Retry-After": String(rateLimitResult.retryAfterSeconds),
+        },
+      }
+    );
+  }
+
+  let member:
+    | {
+        id: string;
+        name: string;
+        login_id: string;
+        birthday_hash: string;
+      }
+    | null = null;
+
+  try {
+    const supabase = getSupabaseAdminClient();
+    const { data, error } = await supabase
+      .from("committee_members")
+      .select("id,name,login_id,birthday_hash")
+      .eq("login_id", loginId)
+      .maybeSingle();
+
+    if (error) {
+      console.error("Login query failed", error);
+      logAuditEvent(
+        "auth.login.query_error",
+        {
+          ip: requestIp,
+          loginId,
+          message: error.message,
+        },
+        "error"
+      );
+      return NextResponse.json({ error: "Login failed." }, { status: 500 });
+    }
+
+    member = data;
+  } catch (error) {
+    console.error("Login runtime failed", error);
+    logAuditEvent(
+      "auth.login.runtime_error",
+      {
+        ip: requestIp,
+        loginId,
+      },
+      "error"
+    );
+    return NextResponse.json({ error: "Login unavailable." }, { status: 500 });
+  }
+
+  if (!member) {
+    logAuditEvent(
+      "auth.login.invalid_credentials",
+      {
+        ip: requestIp,
+        loginId,
+      },
+      "warn"
+    );
+    return NextResponse.json(
+      { error: "Invalid login credentials." },
+      { status: 401 }
+    );
+  }
+
+  const validPassword = await verifyBirthdayPassword(
+    birthdayPassword,
+    member.birthday_hash
+  );
+
+  if (!validPassword) {
+    logAuditEvent(
+      "auth.login.invalid_credentials",
+      {
+        ip: requestIp,
+        loginId,
+      },
+      "warn"
+    );
+    return NextResponse.json(
+      { error: "Invalid login credentials." },
+      { status: 401 }
+    );
+  }
+
+  resetLoginAttempts(rateLimitKey);
+
+  const token = createSessionToken({
+    memberId: member.id,
+    loginId: member.login_id,
+    name: member.name,
+  });
+
+  const response = NextResponse.json({ ok: true });
+  setSessionCookie(response, token);
+
+  logAuditEvent("auth.login.success", {
+    ip: requestIp,
+    loginId: member.login_id,
+    memberId: member.id,
+  });
+
+  return response;
+}
