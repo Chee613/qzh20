@@ -9,19 +9,37 @@ import { LoginForm } from "./login/login-form";
 export default function Home() {
   return (
     <main className="min-h-screen overflow-x-clip bg-zinc-950 font-sans text-zinc-50 selection:bg-blue-500/30">
-      <nav className="fixed inset-x-0 top-0 z-50 border-b border-zinc-800/50 bg-zinc-950/50 backdrop-blur-md">
-        <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-4 sm:px-6 sm:py-5 md:px-8 md:py-6">
-          <div className="flex items-center gap-2">
-            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-blue-400 text-xs font-bold text-zinc-950 sm:h-8 sm:w-8 sm:text-sm">
-              Q
-            </div>
-            <span className="text-base font-semibold tracking-wide sm:text-lg">QZH20</span>
+      {/* Navigation */}
+      <nav className="fixed top-0 z-50 flex w-full items-center justify-between border-b border-zinc-800/50 bg-zinc-950/50 px-4 py-4 backdrop-blur-md md:px-8">
+        {/* Left Corner: Main Logo */}
+        <div className="flex items-center gap-3">
+          <div className="relative h-12 w-12 md:h-16 md:w-16">
+            <Image
+              src="/main-logo.png"
+              alt="Club Main Logo"
+              fill
+              className="object-contain drop-shadow-md"
+            />
           </div>
+          <span className="hidden text-xl font-semibold tracking-wide sm:block">QZH20</span>
+        </div>
+
+        {/* Right Corner: 20th Anniversary Logo & Login */}
+        <div className="flex items-center gap-4 md:gap-8">
+          <div className="relative h-16 w-16 md:h-20 md:w-20">
+            <Image
+              src="/20th-logo.png"
+              alt="20th Anniversary Logo"
+              fill
+              className="object-contain drop-shadow-md"
+            />
+          </div>
+
           <a
             href="#login-section"
-            className="flex items-center gap-2 rounded-full bg-blue-500 px-3 py-2 text-xs font-medium text-white transition-colors hover:bg-blue-400 sm:px-5 sm:text-sm"
+            className="flex items-center gap-2 rounded-full bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue-900/20 transition-all hover:bg-blue-500"
           >
-            <span>Login</span>
+            Login
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path
                 strokeLinecap="round"
