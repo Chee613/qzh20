@@ -50,9 +50,9 @@ export function LoginForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="w-full max-w-sm space-y-4">
-      <div className="space-y-1">
-        <label htmlFor="loginId" className="block text-sm font-medium">
+    <form onSubmit={onSubmit} className="w-full space-y-5">
+      <div className="space-y-1.5">
+        <label htmlFor="loginId" className="block text-sm font-medium text-zinc-700">
           Login ID
         </label>
         <input
@@ -63,14 +63,14 @@ export function LoginForm() {
           required
           value={loginId}
           onChange={(event) => setLoginId(event.target.value)}
-          className="w-full rounded-md border border-zinc-300 px-3 py-2 text-sm outline-none focus:border-zinc-500"
+          className="w-full rounded-lg border border-zinc-200 bg-zinc-50/50 px-4 py-2.5 text-sm transition-colors placeholder:text-zinc-400 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20"
           placeholder="e.g. zhihao"
         />
       </div>
 
-      <div className="space-y-1">
-        <label htmlFor="birthdayPassword" className="block text-sm font-medium">
-          Birthday Password (YYYYMMDD)
+      <div className="space-y-1.5">
+        <label htmlFor="birthdayPassword" className="block text-sm font-medium text-zinc-700">
+          Birthday Password
         </label>
         <input
           id="birthdayPassword"
@@ -81,21 +81,23 @@ export function LoginForm() {
           required
           value={birthdayPassword}
           onChange={(event) => setBirthdayPassword(event.target.value)}
-          className="w-full rounded-md border border-zinc-300 px-3 py-2 text-sm outline-none focus:border-zinc-500"
-          placeholder="20080512"
+          className="w-full rounded-lg border border-zinc-200 bg-zinc-50/50 px-4 py-2.5 text-sm transition-colors placeholder:text-zinc-400 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+          placeholder="YYYYMMDD"
         />
       </div>
 
       {error ? (
-        <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>
+        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
+          {error}
+        </div>
       ) : null}
 
       <button
         type="submit"
         disabled={isSubmitting}
-        className="w-full rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-zinc-700 disabled:cursor-not-allowed disabled:opacity-60"
+        className="mt-2 w-full rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500/50 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-70"
       >
-        {isSubmitting ? "Signing in..." : "Sign In"}
+        {isSubmitting ? "Authenticating..." : "Sign In"}
       </button>
     </form>
   );
