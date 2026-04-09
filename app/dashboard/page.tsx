@@ -37,14 +37,14 @@ export default async function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-zinc-50">
-      <header className="sticky top-0 z-10 border-b border-zinc-200 bg-white/80 px-6 py-4 backdrop-blur-md">
-        <div className="mx-auto flex w-full max-w-5xl items-center justify-between">
-          <div className="flex items-center gap-3">
+      <header className="sticky top-0 z-10 border-b border-zinc-200 bg-white/80 px-4 py-3 backdrop-blur-md sm:px-6 sm:py-4">
+        <div className="mx-auto flex w-full max-w-5xl flex-wrap items-center justify-between gap-3">
+          <div className="flex min-w-0 items-center gap-3">
             <div className="flex h-8 w-8 items-center justify-center rounded-md bg-blue-600 text-white">
               <span className="text-sm font-bold">QZH</span>
             </div>
-            <div>
-              <h1 className="text-base font-semibold text-zinc-900">{session.name}</h1>
+            <div className="min-w-0">
+              <h1 className="truncate text-sm font-semibold text-zinc-900 sm:text-base">{session.name}</h1>
               <p className="text-xs text-zinc-500">ID: {session.loginId}</p>
             </div>
           </div>
@@ -52,9 +52,9 @@ export default async function DashboardPage() {
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-3xl px-6 py-10">
-        <section className="mb-8">
-          <h2 className="text-2xl font-bold tracking-tight text-zinc-900">Your Messages</h2>
+      <main className="mx-auto w-full max-w-3xl px-4 py-8 sm:px-6 sm:py-10">
+        <section className="mb-6 sm:mb-8">
+          <h2 className="text-xl font-bold tracking-tight text-zinc-900 sm:text-2xl">Your Messages</h2>
           <p className="mt-1 text-sm text-zinc-500">
             Words of appreciation from your fellow committee members.
           </p>
@@ -65,7 +65,7 @@ export default async function DashboardPage() {
             {loadError}
           </div>
         ) : messages.length === 0 ? (
-          <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-zinc-300 bg-white py-16 text-center shadow-sm">
+          <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-zinc-300 bg-white py-12 text-center shadow-sm sm:py-16">
             <div className="mb-3 rounded-full bg-zinc-100 p-3 text-zinc-400">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -86,13 +86,13 @@ export default async function DashboardPage() {
             <p className="mt-1 text-xs text-zinc-500">Check back later for updates.</p>
           </div>
         ) : (
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid gap-3 sm:grid-cols-2 sm:gap-4">
             {messages.map((message) => (
               <article
                 key={message.id}
-                className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm transition-all hover:shadow-md"
+                className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm transition-all hover:shadow-md sm:p-6"
               >
-                <span className="absolute right-4 top-4 text-6xl leading-none text-zinc-100 transition-colors group-hover:text-blue-50">
+                <span className="absolute right-3 top-3 text-5xl leading-none text-zinc-100 transition-colors group-hover:text-blue-50 sm:right-4 sm:top-4 sm:text-6xl">
                   &quot;
                 </span>
 
@@ -100,7 +100,7 @@ export default async function DashboardPage() {
                   {message.content}
                 </p>
 
-                <div className="relative z-10 mt-6 flex items-center justify-between border-t border-zinc-100 pt-4">
+                <div className="relative z-10 mt-5 flex flex-wrap items-center justify-between gap-2 border-t border-zinc-100 pt-4 sm:mt-6">
                   <span className="text-sm font-medium text-zinc-900">
                     {message.author_name || "Anonymous"}
                   </span>
