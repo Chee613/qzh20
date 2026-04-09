@@ -50,9 +50,9 @@ export function LoginForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="w-full space-y-5">
-      <div className="space-y-1.5">
-        <label htmlFor="loginId" className="block text-sm font-medium text-zinc-700">
+    <form onSubmit={onSubmit} className="w-full space-y-6">
+      <div className="space-y-2">
+        <label htmlFor="loginId" className="block text-sm font-medium text-zinc-400">
           Login ID
         </label>
         <input
@@ -63,13 +63,13 @@ export function LoginForm() {
           required
           value={loginId}
           onChange={(event) => setLoginId(event.target.value)}
-          className="w-full rounded-lg border border-zinc-200 bg-zinc-50/50 px-4 py-2.5 text-sm transition-colors placeholder:text-zinc-400 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+          className="w-full rounded-xl border border-zinc-800 bg-zinc-950/50 px-4 py-3 text-zinc-100 transition-colors placeholder:text-zinc-600 focus:border-blue-500/50 focus:bg-zinc-900 focus:outline-none focus:ring-1 focus:ring-blue-500/50"
           placeholder="e.g. zhihao"
         />
       </div>
 
-      <div className="space-y-1.5">
-        <label htmlFor="birthdayPassword" className="block text-sm font-medium text-zinc-700">
+      <div className="space-y-2">
+        <label htmlFor="birthdayPassword" className="block text-sm font-medium text-zinc-400">
           Birthday Password
         </label>
         <input
@@ -81,13 +81,13 @@ export function LoginForm() {
           required
           value={birthdayPassword}
           onChange={(event) => setBirthdayPassword(event.target.value)}
-          className="w-full rounded-lg border border-zinc-200 bg-zinc-50/50 px-4 py-2.5 text-sm transition-colors placeholder:text-zinc-400 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+          className="w-full rounded-xl border border-zinc-800 bg-zinc-950/50 px-4 py-3 text-zinc-100 transition-colors placeholder:text-zinc-600 focus:border-blue-500/50 focus:bg-zinc-900 focus:outline-none focus:ring-1 focus:ring-blue-500/50"
           placeholder="YYYYMMDD"
         />
       </div>
 
       {error ? (
-        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
+        <div className="rounded-xl border border-red-900/50 bg-red-950/20 px-4 py-3 text-center text-sm text-red-400">
           {error}
         </div>
       ) : null}
@@ -95,9 +95,9 @@ export function LoginForm() {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="mt-2 w-full rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500/50 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-70"
+        className="w-full rounded-xl bg-gradient-to-r from-blue-600 to-blue-500 px-4 py-3.5 text-sm font-semibold text-white shadow-lg shadow-blue-900/20 transition-all hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-blue-500/50 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50"
       >
-        {isSubmitting ? "Authenticating..." : "Sign In"}
+        {isSubmitting ? "Authenticating..." : "Access Portal"}
       </button>
     </form>
   );
