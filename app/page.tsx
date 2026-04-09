@@ -1,104 +1,324 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
-import { Suspense } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { LoginForm } from "./login/login-form";
 
+const SECTION_LINKS = [
+  { href: "#qzh", label: "全中华" },
+  { href: "#memories", label: "回忆" },
+  { href: "#messages", label: "感言" },
+  { href: "#login-section", label: "登录" },
+] as const;
+
+type SectionHref = (typeof SECTION_LINKS)[number]["href"];
+
 export default function Home() {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null);
+
+  const [activeSection, setActiveSection] = useState<SectionHref>("#qzh");
+  const mobileMenuRef = useRef<HTMLDivElement | null>(null);
+  const mobileMenuButtonRef = useRef<HTMLButtonElement | null>(null);
+
+  // Update count values here if you want to expand from 46 to 47 members.
+  const departments = [
+    { title: "主席团，约饭喝茶鼻祖 🍵🍚", count: 3 },
+    { title: "行政，行政行政吵吵吵🐟🐠🕊️🍒", count: 4 },
+    { title: "节目，出意外就完美🍋🐦", count: 7 },
+    { title: "课程，对不起老师🧑‍🏫👉👈", count: 8 },
+    { title: "总务，很重！很重！肯定！！🪑🪑", count: 8 },
+    { title: "美术，穿小太阳的方大同kawaiii🫘🎨", count: 6 },
+    { title: "联宣，圆圆圈圈圈圈圆圆🫨😵 💫", count: 6 },
+    { title: "筹募，DDKing金主爸爸😎💰🤑", count: 4 },
+  ];
+
+  let globalIndex = 1;
+  const committeeGroups = departments.map((department) => {
+    const members = Array.from({ length: department.count }, () => {
+      const id = globalIndex++;
+      return {
+        displayId: id,
+        id: `member${id}`,
+        image: `/profiles/member${id}.png`,
+      };
+    });
+
+    return {
+      title: department.title,
+      members,
+    };
+  });
+
+  const selectedMemberImage =
+    committeeGroups
+      .flatMap((group) => group.members)
+      .find((member) => member.id === selectedMemberId)?.image ?? "/profiles/member1.png";
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visibleEntries = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+
+        if (visibleEntries.length === 0) {
+          return;
+        }
+
+        const mostVisible = visibleEntries[0];
+        const nextActive = `#${mostVisible.target.id}` as SectionHref;
+        setActiveSection(nextActive);
+      },
+      {
+        root: null,
+        rootMargin: "-35% 0px -50% 0px",
+        threshold: [0.2, 0.4, 0.6],
+      },
+    );
+
+    for (const link of SECTION_LINKS) {
+      const sectionId = link.href.slice(1);
+      const section = document.getElementById(sectionId);
+      if (section) {
+        observer.observe(section);
+      }
+    }
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!isMobileMenuOpen) {
+      return;
+    }
+
+    const handlePointerDown = (event: PointerEvent) => {
+      const targetNode = event.target as Node;
+
+      if (mobileMenuRef.current?.contains(targetNode)) {
+        return;
+      }
+
+      if (mobileMenuButtonRef.current?.contains(targetNode)) {
+        return;
+      }
+
+      setIsMobileMenuOpen(false);
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsMobileMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("pointerdown", handlePointerDown);
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("pointerdown", handlePointerDown);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isMobileMenuOpen]);
+
+  useEffect(() => {
+    if (!selectedMemberId) {
+      return;
+    }
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setSelectedMemberId(null);
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [selectedMemberId]);
+
+  function getDesktopLinkClass(href: string) {
+    return `transition-colors ${
+      activeSection === href ? "text-blue-300" : "text-zinc-400 hover:text-zinc-100"
+    }`;
+  }
+
+  function getMobileLinkClass(href: string) {
+    return `block rounded-xl border px-3 py-2.5 text-sm font-medium transition-colors ${
+      activeSection === href
+        ? "border-blue-500/40 bg-blue-500/10 text-blue-200"
+        : "border-transparent text-zinc-200 hover:border-zinc-800 hover:bg-zinc-900"
+    }`;
+  }
+
+  function handleMenuLinkClick() {
+    setIsMobileMenuOpen(false);
+  }
+
   return (
-    <main className="min-h-screen overflow-x-clip bg-zinc-950 font-sans text-zinc-50 selection:bg-blue-500/30">
-      {/* Navigation */}
-      <nav className="fixed top-0 z-50 flex w-full items-center justify-between border-b border-zinc-800/50 bg-zinc-950/50 px-4 py-4 backdrop-blur-md md:px-8">
-        {/* Left Corner: Main Logo */}
-        <div className="flex items-center gap-3">
-          <div className="relative h-12 w-12 md:h-16 md:w-16">
-            <Image
-              src="/main-logo.png"
-              alt="Club Main Logo"
-              fill
-              className="object-contain drop-shadow-md"
-            />
-          </div>
-          <span className="hidden text-xl font-semibold tracking-wide sm:block">QZH20</span>
-        </div>
-
-        {/* Right Corner: 20th Anniversary Logo & Login */}
-        <div className="flex items-center gap-4 md:gap-8">
-          <div className="relative h-16 w-16 md:h-20 md:w-20">
-            <Image
-              src="/20th-logo.png"
-              alt="20th Anniversary Logo"
-              fill
-              className="object-contain drop-shadow-md"
-            />
-          </div>
-
-          <a
-            href="#login-section"
-            className="flex items-center gap-2 rounded-full bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue-900/20 transition-all hover:bg-blue-500"
-          >
-            Login
-            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M14 5l7 7m0 0l-7 7m7-7H3"
+    <main className="min-h-screen bg-zinc-950 font-sans text-zinc-50 selection:bg-blue-500/30">
+      <div className="fixed inset-x-0 top-0 z-50">
+        {/* Navigation (Framer Style) */}
+        <nav className="flex w-full items-center justify-between border-b border-zinc-800/50 bg-zinc-950/70 px-3 py-3 backdrop-blur-xl sm:px-4 sm:py-4 md:px-8">
+          {/* Left Corner: Main Logo & Title */}
+          <div className="flex items-center gap-2.5 sm:gap-3">
+            <div className="relative h-11 w-11 sm:h-12 sm:w-12 md:h-14 md:w-14">
+              <Image
+                src="/main-logo.png"
+                alt="Club Main Logo"
+                fill
+                className="object-contain drop-shadow-md"
               />
-            </svg>
-          </a>
-        </div>
-      </nav>
+            </div>
+            {/* Text with subtle shine animation like the video */}
+            <div className="group relative hidden overflow-hidden sm:block">
+              <span className="text-lg font-bold tracking-wide text-zinc-100 md:text-xl">QZH20</span>
+              <motion.div
+                className="absolute left-[-100%] top-0 h-full w-full skew-x-[-20deg] bg-gradient-to-r from-transparent via-white/40 to-transparent"
+                animate={{ left: "200%" }}
+                transition={{ repeat: Infinity, duration: 3, ease: "easeInOut", repeatDelay: 2 }}
+              />
+            </div>
+          </div>
 
-      <section className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-4 pb-16 pt-28 sm:px-6 sm:pt-32">
-        <div className="absolute left-1/4 top-1/4 -z-10 h-[360px] w-[360px] rounded-full bg-blue-500/20 blur-[100px] mix-blend-screen sm:h-[500px] sm:w-[500px] sm:blur-[120px]" />
-        <div className="absolute bottom-1/4 right-1/4 -z-10 h-[300px] w-[300px] rounded-full bg-green-400/20 blur-[90px] mix-blend-screen sm:h-[400px] sm:w-[400px] sm:blur-[120px]" />
+          {/* Center/Right: Nav Links & Buttons */}
+          <div className="flex items-center gap-3 sm:gap-6 md:gap-8">
+            {/* Desktop Links */}
+            <div className="hidden items-center gap-8 text-sm font-medium md:flex">
+              {SECTION_LINKS.slice(0, 3).map((link) => (
+                <a key={link.href} href={link.href} className={getDesktopLinkClass(link.href)}>
+                  {link.label}
+                </a>
+              ))}
+            </div>
+
+            {/* Framer 'Get Ticket' Style Login Button */}
+            <a
+              href="#login-section"
+              className="group hidden items-center gap-3 rounded-full border border-blue-600 bg-white px-5 py-2.5 text-blue-700 shadow-lg shadow-blue-900/20 transition-all hover:bg-zinc-50 sm:flex"
+            >
+              <span className="text-sm font-bold">Login</span>
+              <div className="rounded-full bg-blue-700 p-1 text-white transition-transform duration-300 group-hover:rotate-45">
+                <svg width="14" height="14" viewBox="0 0 256 256" fill="currentColor" className="-rotate-45 transform">
+                  <path d="M224.49,136.49l-72,72a12,12,0,0,1-17-17L187,140H40a12,12,0,0,1,0-24H187L135.51,64.48a12,12,0,0,1,17-17l72,72A12,12,0,0,1,224.49,136.49Z" />
+                </svg>
+              </div>
+            </a>
+
+            {/* Mobile Hamburger Menu */}
+            <button
+              type="button"
+              aria-label="Toggle menu"
+              aria-expanded={isMobileMenuOpen}
+              aria-controls="mobile-nav-menu"
+              ref={mobileMenuButtonRef}
+              onClick={() => setIsMobileMenuOpen((open) => !open)}
+              className="flex h-10 w-10 flex-col items-center justify-center gap-1.5 rounded-full border border-zinc-800 bg-zinc-900 md:hidden"
+            >
+              <span
+                className={`h-[2px] w-5 rounded-full bg-zinc-100 transition-transform duration-300 ${
+                  isMobileMenuOpen ? "translate-y-[3.5px] rotate-45" : ""
+                }`}
+              />
+              <span
+                className={`h-[2px] w-5 rounded-full bg-zinc-100 transition-transform duration-300 ${
+                  isMobileMenuOpen ? "-translate-y-[3.5px] -rotate-45" : ""
+                }`}
+              />
+            </button>
+          </div>
+        </nav>
+
+        <AnimatePresence>
+          {isMobileMenuOpen ? (
+            <motion.div
+              id="mobile-nav-menu"
+              ref={mobileMenuRef}
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+              className="overflow-hidden border-b border-zinc-800/50 bg-zinc-950/95 px-3 py-2 backdrop-blur-xl md:hidden"
+            >
+              <div className="space-y-1">
+                {SECTION_LINKS.map((link) => (
+                  <a
+                    key={link.href}
+                    href={link.href}
+                    onClick={() => {
+                      setActiveSection(link.href);
+                      handleMenuLinkClick();
+                    }}
+                    className={getMobileLinkClass(link.href)}
+                  >
+                    {link.label}
+                  </a>
+                ))}
+              </div>
+            </motion.div>
+          ) : null}
+        </AnimatePresence>
+      </div>
+
+      {/* SECTION 1: 全中华 (Hero Section) */}
+      <section
+        id="qzh"
+        className="relative flex min-h-screen scroll-mt-24 flex-col items-center justify-center overflow-hidden px-4 pb-8 pt-24 sm:px-6 sm:pt-28 md:pb-0"
+      >
+        <div className="absolute left-1/4 top-1/4 -z-10 h-[500px] w-[500px] rounded-full bg-blue-600/20 blur-[120px] mix-blend-screen" />
+        <div className="absolute bottom-1/4 right-1/4 -z-10 h-[400px] w-[400px] rounded-full bg-emerald-500/10 blur-[120px] mix-blend-screen" />
 
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           className="z-10 mx-auto max-w-4xl text-center"
         >
-          <h1 className="mb-5 text-4xl font-black tracking-tight sm:mb-6 sm:text-6xl md:text-8xl">
-            <span className="bg-gradient-to-r from-blue-400 to-green-300 bg-clip-text text-transparent">
-              QZH20
+          <div className="mb-5 flex justify-center sm:mb-6">
+            <div className="relative mb-3 h-20 w-20 sm:mb-4 sm:h-24 sm:w-24 md:h-32 md:w-32">
+              <Image src="/20th-logo.png" alt="20th Anniversary" fill className="object-contain drop-shadow-2xl" />
+            </div>
+          </div>
+          <h1 className="mb-5 text-4xl font-black leading-[1.05] tracking-tighter sm:mb-6 sm:text-5xl md:text-8xl">
+            <span className="bg-gradient-to-r from-blue-400 to-emerald-300 bg-clip-text text-transparent">
+              全中华
             </span>
-            <br /> Message Portal
+            <br /> 专属留言板
           </h1>
           <p className="mx-auto max-w-2xl text-base leading-relaxed text-zinc-400 sm:text-lg md:text-2xl">
-            A dedicated space for camp committee members to connect and view their
-            personalized messages.
+            Welcome to the QZH20 Message Portal. A dedicated space for our committee members to connect.
           </p>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1, duration: 1 }}
-          className="absolute bottom-6 left-1/2 flex -translate-x-1/2 flex-col items-center gap-2 text-zinc-500 sm:bottom-10"
-        >
-          <span className="text-xs uppercase tracking-[0.2em] sm:text-sm sm:tracking-widest">Scroll</span>
-          <div className="h-12 w-[1px] bg-gradient-to-b from-zinc-500 to-transparent" />
         </motion.div>
       </section>
 
-      <section className="relative overflow-hidden border-t border-zinc-800/50 px-4 py-20 sm:px-6 sm:py-24 md:py-32">
-        <div className="mx-auto grid max-w-6xl items-center gap-10 sm:gap-12 md:grid-cols-2 md:gap-16">
+      {/* SECTION 2: 回忆 (Memories & Mascot) */}
+      <section id="memories" className="relative scroll-mt-24 overflow-hidden border-t border-zinc-800/50 px-4 py-20 sm:px-6 sm:py-24 md:py-32">
+        <div className="mx-auto grid max-w-6xl items-center gap-10 sm:gap-14 md:grid-cols-2 md:gap-16">
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.6 }}
           >
-            <h2 className="mb-5 text-3xl font-bold sm:mb-6 sm:text-4xl md:text-5xl">
-              Built for the <br />Committee
+            <div className="mb-4 inline-block rounded-full border border-blue-500/30 bg-blue-500/10 px-3 py-1 text-xs font-semibold tracking-wider text-blue-400 sm:text-sm">
+              回忆 MEMORIES
+            </div>
+            <h2 className="mb-5 text-3xl font-bold text-zinc-100 sm:mb-6 sm:text-4xl md:text-5xl">
+              Our Shared <br />Journey
             </h2>
-            <p className="text-base leading-relaxed text-zinc-400 sm:text-lg">
-              Log in with your member ID and birthday to access messages written just for
-              you by your fellow team members. Let&apos;s celebrate our hard work together.
+            <p className="mb-6 text-base leading-relaxed text-zinc-400 sm:mb-8 sm:text-lg">
+              From the very first meeting to the final campfire, every moment we spent together shaped the success of QZH20. Log in to look back at the memories we created.
             </p>
           </motion.div>
 
@@ -109,16 +329,15 @@ export default function Home() {
             transition={{ duration: 0.8 }}
             className="relative flex justify-center"
           >
-            <div className="group relative h-52 w-52 sm:h-64 sm:w-64 md:h-80 md:w-80">
-              <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-blue-500/30 to-green-400/30 blur-3xl transition-all duration-500 group-hover:blur-2xl" />
-
-              <div className="relative z-10 flex h-full w-full items-center justify-center transition-transform duration-500 hover:scale-105">
+            {/* Mascot Image */}
+            <div className="group relative h-56 w-56 sm:h-72 sm:w-72 md:h-96 md:w-96">
+              <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-blue-500/30 to-emerald-400/30 blur-3xl transition-all duration-500 group-hover:blur-2xl" />
+              <div className="relative z-10 flex h-full w-full items-center justify-center transition-transform duration-500 hover:-translate-y-4">
                 <Image
                   src="/mascot.png"
                   alt="QZH20 Dinosaur Mascot"
                   fill
-                  className="object-contain drop-shadow-[0_0_30px_rgba(59,130,246,0.5)]"
-                  priority
+                  className="object-contain drop-shadow-[0_0_40px_rgba(59,130,246,0.4)]"
                 />
               </div>
             </div>
@@ -126,29 +345,138 @@ export default function Home() {
         </div>
       </section>
 
+      {/* SECTION 3: 感言 (Testimonials/Messages Preview) */}
+      <section id="messages" className="relative scroll-mt-24 overflow-hidden border-t border-zinc-800/50 bg-zinc-900/30 px-4 py-20 sm:px-6 sm:py-24 md:py-32">
+        <div className="mx-auto max-w-4xl text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <div className="mb-4 inline-block rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-xs font-semibold tracking-wider text-emerald-400 sm:text-sm">
+              感言 MESSAGES
+            </div>
+            <h2 className="mb-5 text-3xl font-bold text-zinc-100 sm:mb-6 sm:text-4xl md:text-5xl">Words from the Heart</h2>
+            <p className="mx-auto mb-10 max-w-2xl text-base leading-relaxed text-zinc-400 sm:mb-12 sm:text-lg">
+              Discover the hidden messages written by your fellow committee members. Every message is a token of appreciation for your hard work.
+            </p>
+          </motion.div>
+
+          {/* Decorative Mock Cards */}
+          <div className="pointer-events-none grid select-none grid-cols-1 gap-4 opacity-60 blur-[2px] sm:grid-cols-3 sm:gap-6">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="rounded-2xl border border-zinc-800 bg-zinc-950 p-6 shadow-xl">
+                <div className="mb-4 h-8 w-8 rounded-full bg-zinc-800" />
+                <div className="mb-2 h-4 w-3/4 rounded bg-zinc-800" />
+                <div className="mb-2 h-4 w-full rounded bg-zinc-800" />
+                <div className="h-4 w-5/6 rounded bg-zinc-800" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION 4: 寻找自己 (Find Yourself / Login Grid) */}
       <section
         id="login-section"
-        className="relative flex min-h-screen scroll-mt-24 items-center justify-center border-t border-zinc-800/50 px-4 py-16 sm:px-6 sm:py-20"
+        className="relative min-h-screen scroll-mt-24 border-t border-zinc-800/50 bg-zinc-950 px-4 py-20 sm:px-6 sm:py-24"
       >
-        <div className="pointer-events-none absolute left-1/2 top-0 -z-10 h-[400px] w-full max-w-lg -translate-x-1/2 rounded-full bg-blue-500/10 blur-[100px]" />
+        <div className="pointer-events-none absolute left-1/2 top-1/2 -z-10 h-[520px] w-full max-w-4xl -translate-x-1/2 -translate-y-1/2 rounded-full bg-blue-600/10 blur-[120px]" />
 
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="w-full max-w-md"
-        >
-          <div className="rounded-3xl border border-zinc-800 bg-zinc-900/80 p-6 shadow-2xl backdrop-blur-xl sm:p-8">
-            <div className="mb-8 text-center">
-              <h2 className="mb-2 text-2xl font-bold text-zinc-100 sm:text-3xl">Welcome Back</h2>
-              <p className="text-sm text-zinc-400">Enter your details to view your messages</p>
-            </div>
-            <Suspense fallback={<div className="text-center text-sm text-zinc-500">Loading...</div>}>
-              <LoginForm />
-            </Suspense>
+        <div className="mx-auto max-w-6xl">
+          <div className="mb-12 text-center sm:mb-16">
+            <h2 className="mb-4 text-3xl font-bold text-zinc-100 sm:text-4xl md:text-5xl">Who are you?</h2>
+            <p className="text-base text-zinc-400 sm:text-lg">
+              Find your profile picture to unlock your messages.
+            </p>
           </div>
-        </motion.div>
+
+          <div className="space-y-16 sm:space-y-20">
+            {committeeGroups.map((group, groupIndex) => (
+              <div key={`${group.title}-${groupIndex}`} className="space-y-6 sm:space-y-8">
+                <div className="flex items-center justify-center gap-4">
+                  <div className="hidden h-[1px] flex-1 bg-gradient-to-r from-transparent to-zinc-800 sm:block" />
+                  <h3 className="px-4 text-center text-lg font-bold text-zinc-200 sm:text-xl md:text-2xl">
+                    {group.title}
+                  </h3>
+                  <div className="hidden h-[1px] flex-1 bg-gradient-to-l from-transparent to-zinc-800 sm:block" />
+                </div>
+                <div className="mx-auto flex max-w-5xl flex-wrap justify-center gap-3 px-2 sm:gap-4">
+                  {group.members.map((member) => (
+                    <motion.button
+                      key={member.id}
+                      type="button"
+                      whileHover={{ scale: 1.1, zIndex: 10 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => setSelectedMemberId(member.id)}
+                      className="group relative aspect-square w-[86px] shrink-0 overflow-hidden rounded-2xl border-2 border-zinc-800 bg-zinc-900 shadow-lg transition-colors hover:border-blue-500 sm:w-[92px] md:w-[98px] lg:w-[104px]"
+                    >
+                      <div className="absolute inset-0 flex flex-col items-center justify-center bg-zinc-900 font-bold text-zinc-600 opacity-100 transition-opacity">
+                        <span className="mb-1 text-xs font-normal">ID</span>
+                        #{member.displayId}
+                      </div>
+
+                      <Image
+                        src={member.image}
+                        alt={`Member ${member.displayId}`}
+                        fill
+                        className="relative z-10 object-cover"
+                        sizes="(max-width: 640px) 86px, (max-width: 768px) 92px, (max-width: 1024px) 98px, 104px"
+                        onError={(event) => {
+                          event.currentTarget.style.opacity = "0";
+                        }}
+                      />
+                    </motion.button>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <AnimatePresence>
+          {selectedMemberId ? (
+            <div className="fixed inset-0 z-[100] flex items-center justify-center px-4">
+              <motion.button
+                type="button"
+                aria-label="Close member login"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setSelectedMemberId(null)}
+                className="absolute inset-0 cursor-pointer bg-black/80 backdrop-blur-md"
+              />
+
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                className="relative w-full max-w-sm overflow-hidden rounded-3xl border border-zinc-700/50 bg-zinc-900 p-6 shadow-2xl sm:p-8"
+              >
+                <div className="pointer-events-none absolute -right-20 -top-20 h-40 w-40 rounded-full bg-blue-500/20 blur-3xl" />
+
+                <button
+                  type="button"
+                  onClick={() => setSelectedMemberId(null)}
+                  className="absolute right-4 top-4 rounded-full bg-zinc-800/50 p-2 text-zinc-500 transition-colors hover:text-zinc-100"
+                >
+                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+
+                <div className="mb-6 mt-2 text-center">
+                  <div className="relative mx-auto mb-4 h-20 w-20 overflow-hidden rounded-full border-4 border-zinc-800 bg-zinc-950">
+                    <Image src={selectedMemberImage} alt="Selected profile" fill className="object-cover" />
+                  </div>
+                  <h3 className="text-xl font-bold text-zinc-100">Welcome Back!</h3>
+                </div>
+
+                <LoginForm prefilledLoginId={selectedMemberId} />
+              </motion.div>
+            </div>
+          ) : null}
+        </AnimatePresence>
       </section>
     </main>
   );
