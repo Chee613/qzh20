@@ -15,7 +15,8 @@ export function LogoutButton() {
         method: "POST",
       });
     } finally {
-      router.push("/login");
+      // Changed from "/login" to "/" to redirect back to the main landing page
+      router.push("/");
       router.refresh();
       setIsLoading(false);
     }
@@ -26,7 +27,7 @@ export function LogoutButton() {
       type="button"
       onClick={onLogout}
       disabled={isLoading}
-      className="shrink-0 rounded-md border border-zinc-300 px-2.5 py-2 text-xs text-zinc-800 transition hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-50 sm:px-3 sm:text-sm"
+      className="rounded-md border border-zinc-300 px-3 py-2 text-sm text-zinc-800 transition hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-50"
     >
       {isLoading ? "Signing out..." : "Sign out"}
     </button>

@@ -23,21 +23,22 @@ export default function Home() {
   const mobileMenuRef = useRef<HTMLDivElement | null>(null);
   const mobileMenuButtonRef = useRef<HTMLButtonElement | null>(null);
 
-  // Update count values here if you want to expand from 46 to 47 members.
+  // Define the department categories, their member counts, and sticker paths.
   const departments = [
-    { title: "主席团，约饭喝茶鼻祖 🍵🍚", count: 3 },
-    { title: "行政，行政行政吵吵吵🐟🐠🕊️🍒", count: 4 },
-    { title: "节目，出意外就完美🍋🐦", count: 7 },
-    { title: "课程，对不起老师🧑‍🏫👉👈", count: 8 },
-    { title: "总务，很重！很重！肯定！！🪑🪑", count: 8 },
-    { title: "美术，穿小太阳的方大同kawaiii🫘🎨", count: 6 },
-    { title: "联宣，圆圆圈圈圈圈圆圆🫨😵 💫", count: 6 },
-    { title: "筹募，DDKing金主爸爸😎💰🤑", count: 4 },
+    { title: "主席团，约饭喝茶鼻祖 🍵🍚", count: 3, sticker: "/stickers/主席团.png" },
+    { title: "行政，行政行政吵吵吵🐟🐠🕊️🍒", count: 4, sticker: "/stickers/行政.png" },
+    { title: "节目，出意外就完美🍋🐦", count: 7, sticker: "/stickers/节目.png" },
+    { title: "课程，对不起老师🧑‍🏫👉👈", count: 8, sticker: "/stickers/课程.png" },
+    { title: "总务，很重！很重！肯定！！🪑🪑", count: 8, sticker: "/stickers/总务.png" },
+    { title: "美术，穿小太阳的方大同kawaiii🫘🎨", count: 6, sticker: "/stickers/美术.png" },
+    { title: "联宣，圆圆圈圈圈圈圆圆🫨😵 💫", count: 6, sticker: "/stickers/联宣.png" },
+    { title: "筹募，DDKing金主爸爸😎💰🤑", count: 4, sticker: "/stickers/筹募.png" },
   ];
 
+  // Generate the members continuously while keeping them grouped.
   let globalIndex = 1;
-  const committeeGroups = departments.map((department) => {
-    const members = Array.from({ length: department.count }, () => {
+  const committeeGroups = departments.map((dept) => {
+    const members = Array.from({ length: dept.count }, () => {
       const id = globalIndex++;
       return {
         displayId: id,
@@ -46,10 +47,7 @@ export default function Home() {
       };
     });
 
-    return {
-      title: department.title,
-      members,
-    };
+    return { title: dept.title, members, sticker: dept.sticker };
   });
 
   const selectedMemberImage =
@@ -391,43 +389,66 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="space-y-16 sm:space-y-20">
-            {committeeGroups.map((group, groupIndex) => (
-              <div key={`${group.title}-${groupIndex}`} className="space-y-6 sm:space-y-8">
+          {/* Grouped Grid of Members */}
+          <div className="mx-auto max-w-7xl space-y-20">
+            {committeeGroups.map((group, groupIdx) => (
+              <div key={groupIdx} className="space-y-10">
+                {/* Department Title */}
                 <div className="flex items-center justify-center gap-4">
                   <div className="hidden h-[1px] flex-1 bg-gradient-to-r from-transparent to-zinc-800 sm:block" />
-                  <h3 className="px-4 text-center text-lg font-bold text-zinc-200 sm:text-xl md:text-2xl">
+                  <h3 className="px-4 text-center text-xl font-bold text-zinc-200 md:text-2xl">
                     {group.title}
                   </h3>
                   <div className="hidden h-[1px] flex-1 bg-gradient-to-l from-transparent to-zinc-800 sm:block" />
                 </div>
-                <div className="mx-auto flex max-w-5xl flex-wrap justify-center gap-3 px-2 sm:gap-4">
-                  {group.members.map((member) => (
-                    <motion.button
-                      key={member.id}
-                      type="button"
-                      whileHover={{ scale: 1.1, zIndex: 10 }}
-                      whileTap={{ scale: 0.95 }}
-                      onClick={() => setSelectedMemberId(member.id)}
-                      className="group relative aspect-square w-[86px] shrink-0 overflow-hidden rounded-2xl border-2 border-zinc-800 bg-zinc-900 shadow-lg transition-colors hover:border-blue-500 sm:w-[92px] md:w-[98px] lg:w-[104px]"
-                    >
-                      <div className="absolute inset-0 flex flex-col items-center justify-center bg-zinc-900 font-bold text-zinc-600 opacity-100 transition-opacity">
-                        <span className="mb-1 text-xs font-normal">ID</span>
-                        #{member.displayId}
-                      </div>
 
-                      <Image
-                        src={member.image}
-                        alt={`Member ${member.displayId}`}
-                        fill
-                        className="relative z-10 object-cover"
-                        sizes="(max-width: 640px) 86px, (max-width: 768px) 92px, (max-width: 1024px) 98px, 104px"
-                        onError={(event) => {
-                          event.currentTarget.style.opacity = "0";
-                        }}
-                      />
-                    </motion.button>
-                  ))}
+                {/* Flex Container for Sticker and Grid (Aligns stickers vertically) */}
+                <div className="flex flex-col items-center gap-8 md:flex-row md:items-start md:gap-12">
+                  {/* Sticker Column - Fixed width on desktop for consistent alignment */}
+                  <div className="relative flex h-40 w-40 flex-shrink-0 items-center justify-center md:h-52 md:w-52">
+                    {/* Decorative glow behind sticker */}
+                    <div className="absolute inset-2 rounded-full bg-blue-500/10 blur-2xl" />
+
+                    <Image
+                      src={group.sticker}
+                      alt={`${group.title} Sticker`}
+                      fill
+                      className="relative z-10 object-contain drop-shadow-[0_0_20px_rgba(59,130,246,0.5)]"
+                      priority={groupIdx < 2}
+                    />
+                  </div>
+
+                  {/* Member Grid Column - Takes up remaining space */}
+                  <div className="w-full flex-grow">
+                    <div className="grid grid-cols-3 justify-center gap-4 sm:grid-cols-4 md:grid-cols-5 md:justify-start md:gap-6 lg:grid-cols-7">
+                      {group.members.map((member) => (
+                        <motion.button
+                          key={member.id}
+                          type="button"
+                          whileHover={{ scale: 1.1, zIndex: 10, borderColor: "#3b82f6" }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={() => setSelectedMemberId(member.id)}
+                          className="group relative aspect-square overflow-hidden rounded-2xl border-2 border-zinc-800 bg-zinc-900 shadow-lg transition-colors"
+                        >
+                          {/* Fallback text if image fails to load */}
+                          <div className="absolute inset-0 flex flex-col items-center justify-center bg-zinc-900 font-bold text-zinc-600 opacity-100 transition-opacity">
+                            <span className="mb-1 text-xs font-normal">ID</span>
+                            #{member.displayId}
+                          </div>
+
+                          <Image
+                            src={member.image}
+                            alt={`Member ${member.displayId}`}
+                            fill
+                            className="relative z-10 object-cover"
+                            onError={(event) => {
+                              event.currentTarget.style.opacity = "0";
+                            }}
+                          />
+                        </motion.button>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </div>
             ))}
