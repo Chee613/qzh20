@@ -15,7 +15,8 @@ export function LogoutButton() {
         method: "POST",
       });
     } finally {
-      router.push("/login");
+      // Changed from "/login" to "/" to redirect back to the main landing page
+      router.push("/");
       router.refresh();
       setIsLoading(false);
     }
