@@ -28,3 +28,103 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.teleprompter-track {
+  position: relative;
+  height: 100vh;
+  margin-top: 1.5rem;
+}
+
+.teleprompter-viewport {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(0, 0, 0, 1) 14%,
+    rgba(0, 0, 0, 1) 86%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(0, 0, 0, 1) 14%,
+    rgba(0, 0, 0, 1) 86%,
+    transparent 100%
+  );
+}
+
+.teleprompter-text {
+  position: relative;
+  width: min(900px, 90vw);
+  min-height: clamp(140px, 22vh, 240px);
+  will-change: transform;
+}
+
+.teleprompter-line {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 100%;
+  margin: 0;
+  font-size: clamp(1.08rem, 2.35vw, 2.16rem);
+  font-weight: 650;
+  line-height: 1.36;
+  letter-spacing: 0.01em;
+  color: #e5e7eb;
+  text-align: center;
+  text-wrap: balance;
+  transform: translate3d(-50%, 28px, 0) scale(0.988);
+  opacity: 0;
+  filter: blur(0.9px);
+  transition:
+    opacity 380ms ease,
+    transform 460ms cubic-bezier(0.22, 0.8, 0.2, 1),
+    filter 420ms ease;
+  pointer-events: none;
+}
+
+.teleprompter-line.is-hidden {
+  opacity: 0;
+  transform: translate3d(-50%, 30px, 0) scale(0.988);
+  filter: blur(1px);
+}
+
+.teleprompter-line.is-active {
+  transform: translate3d(-50%, 0, 0) scale(1);
+  opacity: 1;
+  filter: blur(0);
+  text-shadow:
+    0 0 8px rgba(255, 255, 255, 0.12),
+    0 0 16px rgba(59, 130, 246, 0.28),
+    0 2px 24px rgba(0, 0, 0, 0.35);
+}
+
+.teleprompter-line.is-outgoing {
+  opacity: calc(1 - var(--switch, 0));
+  transform: translate3d(-50%, calc(var(--switch, 0) * -30px), 0)
+    scale(calc(1 - var(--switch, 0) * 0.03));
+  filter: blur(calc(var(--switch, 0) * 1px));
+}
+
+.teleprompter-line.is-incoming {
+  opacity: var(--switch, 0);
+  transform: translate3d(-50%, calc((1 - var(--switch, 0)) * 30px), 0)
+    scale(calc(0.97 + var(--switch, 0) * 0.03));
+  filter: blur(calc((1 - var(--switch, 0)) * 1px));
+}
+
+.teleprompter-letter {
+  opacity: 0.14;
+  transition: opacity 90ms linear, text-shadow 90ms linear;
+}
+
+.teleprompter-letter.active {
+  opacity: 1;
+  text-shadow: 0 0 11px rgba(255, 255, 255, 0.32);
+}
