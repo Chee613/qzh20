@@ -4,6 +4,8 @@ import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 
+import { SlideController } from "@/lib/SlideController";
+
 import { LoginForm } from "./login/login-form";
 
 const SECTION_LINKS = [
@@ -50,6 +52,7 @@ export default function Home() {
   const teleprompterViewportRef = useRef<HTMLDivElement | null>(null);
   const teleprompterTextRef = useRef<HTMLDivElement | null>(null);
   const teleprompterProgressRef = useRef(0);
+  const teleprompterCompletedRef = useRef(false);
   const teleprompterTouchStartYRef = useRef<number | null>(null);
 
   // Define the department categories, their member counts, and sticker paths.
@@ -214,10 +217,12 @@ export default function Home() {
 
     const HOLD_UNITS = 7;
     const SWITCH_UNITS = 8;
+    const SWITCH_OUTGOING_CUTOFF = 0.62;
 
     const clamp = (value: number, min: number, max: number) =>
       Math.min(Math.max(value, min), max);
     const easeOutCubic = (value: number) => 1 - Math.pow(1 - value, 3);
+    const isMobileViewport = () => window.matchMedia("(max-width: 768px)").matches;
 
     const buildTeleprompter = () => {
       textContainer.innerHTML = "";
@@ -365,10 +370,7 @@ export default function Home() {
 
         meta.line.classList.remove("is-hidden");
         meta.line.classList.add("is-active");
-
-        const eased = easeOutCubic(stage.fraction);
-        const revealLimit = Math.floor(eased * meta.revealableCount);
-        revealLetters(meta, revealLimit);
+        revealAllLetters(meta);
         return;
       }
 
@@ -392,25 +394,54 @@ export default function Home() {
 
       const switchProgress = easeOutCubic(stage.fraction);
 
-      currentMeta.line.classList.remove("is-hidden");
-      currentMeta.line.classList.add("is-outgoing");
-      currentMeta.line.style.setProperty("--switch", `${switchProgress}`);
-      revealAllLetters(currentMeta);
+      if (switchProgress < SWITCH_OUTGOING_CUTOFF) {
+        const outgoingProgress = clamp(switchProgress / SWITCH_OUTGOING_CUTOFF, 0, 1);
+        currentMeta.line.classList.remove("is-hidden");
+        currentMeta.line.classList.add("is-outgoing");
+        currentMeta.line.style.setProperty("--switch", `${outgoingProgress}`);
+        revealAllLetters(currentMeta);
+        return;
+      }
 
+      const incomingProgress = clamp(
+        (switchProgress - SWITCH_OUTGOING_CUTOFF) / (1 - SWITCH_OUTGOING_CUTOFF),
+        0,
+        1,
+      );
       nextMeta.line.classList.remove("is-hidden");
       nextMeta.line.classList.add("is-incoming");
-      nextMeta.line.style.setProperty("--switch", `${switchProgress}`);
-      revealLetters(nextMeta, 0);
+      nextMeta.line.style.setProperty("--switch", `${incomingProgress}`);
+      revealAllLetters(nextMeta);
     };
 
     const isInLockZone = () => {
       const sectionRect = messagesSection.getBoundingClientRect();
-      return sectionRect.top <= 84 && sectionRect.bottom > window.innerHeight * 0.32;
+      const viewportCenter = window.innerHeight * 0.5;
+      return sectionRect.top <= viewportCenter && sectionRect.bottom >= viewportCenter;
     };
 
-    const updateProgressByDelta = (deltaY: number) => {
-      const normalizedDelta = Math.sign(deltaY) * Math.min(Math.abs(deltaY), 72);
-      const perDeltaUnit = 1 / Math.max(totalTimelineUnits * 2.5, 1);
+    type ProgressInputSource = "wheel" | "touch" | "key";
+
+    const syncTeleprompterCompletion = (progress: number) => {
+      const isComplete = progress >= 0.999;
+      teleprompterCompletedRef.current = isComplete;
+      messagesSection.dataset.teleprompterStatus = isComplete ? "complete" : "locked";
+      messagesSection.dataset.teleprompterProgress = progress.toFixed(3);
+    };
+
+    const updateProgressByDelta = (deltaY: number, source: ProgressInputSource) => {
+      const mobile = isMobileViewport();
+      const sourceAdjustedDelta =
+        source === "touch" && mobile
+          ? deltaY * 0.58
+          : source === "wheel" && mobile
+            ? deltaY * 0.82
+            : deltaY;
+      const normalizedDelta =
+        Math.sign(sourceAdjustedDelta) *
+        Math.min(Math.abs(sourceAdjustedDelta), mobile ? 48 : 72);
+      const perDeltaUnit =
+        1 / Math.max(totalTimelineUnits * (mobile ? 3.25 : 2.5), 1);
       const current = teleprompterProgressRef.current;
       const next = clamp(current + normalizedDelta * perDeltaUnit, 0, 1);
 
@@ -420,6 +451,7 @@ export default function Home() {
 
       teleprompterProgressRef.current = next;
       applyTeleprompterState(next);
+      syncTeleprompterCompletion(next);
     };
 
     const handleWheel = (event: WheelEvent) => {
@@ -433,7 +465,7 @@ export default function Home() {
 
       if ((scrollingDown && progress < 1) || (scrollingUp && progress > 0)) {
         event.preventDefault();
-        updateProgressByDelta(event.deltaY);
+        updateProgressByDelta(event.deltaY, "wheel");
       }
     };
 
@@ -460,7 +492,7 @@ export default function Home() {
 
       if ((scrollingDown && progress < 1) || (scrollingUp && progress > 0)) {
         event.preventDefault();
-        updateProgressByDelta(deltaY * 1.2);
+        updateProgressByDelta(deltaY, "touch");
         teleprompterTouchStartYRef.current = currentY;
       }
     };
@@ -478,22 +510,28 @@ export default function Home() {
 
       if ((event.key === "ArrowDown" || event.key === "PageDown" || event.key === " ") && progress < 1) {
         event.preventDefault();
-        updateProgressByDelta(220);
+        updateProgressByDelta(220, "key");
       }
 
       if ((event.key === "ArrowUp" || event.key === "PageUp") && progress > 0) {
         event.preventDefault();
-        updateProgressByDelta(-220);
+        updateProgressByDelta(-220, "key");
       }
     };
 
     const handleResize = () => {
       buildTeleprompter();
-      applyTeleprompterState(teleprompterProgressRef.current);
+      const clampedProgress = clamp(teleprompterProgressRef.current, 0, 1);
+      teleprompterProgressRef.current = clampedProgress;
+      applyTeleprompterState(clampedProgress);
+      syncTeleprompterCompletion(clampedProgress);
     };
 
     buildTeleprompter();
-    applyTeleprompterState(teleprompterProgressRef.current);
+    const initialProgress = clamp(teleprompterProgressRef.current, 0, 1);
+    teleprompterProgressRef.current = initialProgress;
+    applyTeleprompterState(initialProgress);
+    syncTeleprompterCompletion(initialProgress);
 
     window.addEventListener("wheel", handleWheel, { passive: false });
     window.addEventListener("touchstart", handleTouchStart, { passive: true });
@@ -509,6 +547,37 @@ export default function Home() {
       window.removeEventListener("touchend", handleTouchEnd);
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
+  useEffect(() => {
+    const slideController = new SlideController({
+      sectionSelector: "main > section",
+      threshold: 0.5,
+      lockDurationMs: 600,
+      swipeThresholdPx: 50,
+      mobileSwipeThresholdPx: 86,
+      mobileSwipeDamping: 0.7,
+      mobileLockDurationMs: 820,
+      disableSwipeSelector: "#messages .teleprompter-track",
+      dotLabelAttribute: "data-nav-short",
+      canTransition: ({ currentSection, targetSection }) => {
+        if (
+          currentSection.id === "messages" &&
+          targetSection.id !== "messages" &&
+          !teleprompterCompletedRef.current
+        ) {
+          return false;
+        }
+
+        return true;
+      },
+    });
+
+    slideController.init();
+
+    return () => {
+      slideController.destroy();
     };
   }, []);
 
@@ -547,7 +616,7 @@ export default function Home() {
             </div>
             {/* Text with subtle shine animation like the video */}
             <div className="group relative hidden overflow-hidden sm:block">
-              <span className="text-lg font-bold tracking-wide text-zinc-100 md:text-xl">QZH20</span>
+              <span className="text-lg font-bold tracking-wide text-zinc-100 md:text-xl">全中华20</span>
               <motion.div
                 className="absolute left-[-100%] top-0 h-full w-full skew-x-[-20deg] bg-gradient-to-r from-transparent via-white/40 to-transparent"
                 animate={{ left: "200%" }}
@@ -572,7 +641,7 @@ export default function Home() {
               href="#login-section"
               className="group hidden items-center gap-3 rounded-full border border-blue-600 bg-white px-5 py-2.5 text-blue-700 shadow-lg shadow-blue-900/20 transition-all hover:bg-zinc-50 sm:flex"
             >
-              <span className="text-sm font-bold">Login</span>
+              <span className="text-sm font-bold">圈圈</span>
               <div className="rounded-full bg-blue-700 p-1 text-white transition-transform duration-300 group-hover:rotate-45">
                 <svg width="14" height="14" viewBox="0 0 256 256" fill="currentColor" className="-rotate-45 transform">
                   <path d="M224.49,136.49l-72,72a12,12,0,0,1-17-17L187,140H40a12,12,0,0,1,0-24H187L135.51,64.48a12,12,0,0,1,17-17l72,72A12,12,0,0,1,224.49,136.49Z" />
@@ -637,6 +706,8 @@ export default function Home() {
       {/* SECTION 1: 全中华 (Hero Section) */}
       <section
         id="qzh"
+        data-nav-short="QZH"
+        data-nav-label="全中华"
         className="relative flex min-h-screen scroll-mt-24 flex-col items-center justify-center overflow-hidden px-4 pb-8 pt-24 sm:px-6 sm:pt-28 md:pb-0"
       >
         <div className="absolute left-1/4 top-1/4 -z-10 h-[500px] w-[500px] rounded-full bg-blue-600/20 blur-[120px] mix-blend-screen" />
@@ -666,7 +737,12 @@ export default function Home() {
       </section>
 
       {/* SECTION 2: 回忆 (Memories & Mascot) */}
-      <section id="memories" className="relative scroll-mt-24 overflow-hidden border-t border-zinc-800/50 px-4 py-20 sm:px-6 sm:py-24 md:py-32">
+      <section
+        id="memories"
+        data-nav-short="回忆"
+        data-nav-label="回忆"
+        className="relative scroll-mt-24 overflow-hidden border-t border-zinc-800/50 px-4 py-20 sm:px-6 sm:py-24 md:py-32"
+      >
         <div className="mx-auto grid max-w-6xl items-center gap-10 sm:gap-14 md:grid-cols-2 md:gap-16">
           <motion.div
             initial={{ opacity: 0, x: -50 }}
@@ -709,20 +785,24 @@ export default function Home() {
       </section>
 
       {/* SECTION 3: 感言 (Testimonials/Messages Preview) */}
-      <section ref={messagesSectionRef} id="messages" className="relative scroll-mt-24 overflow-hidden border-t border-zinc-800/50 bg-zinc-900/30 px-4 py-20 sm:px-6 sm:py-24 md:py-32">
-        <div className="mx-auto max-w-4xl text-center">
+      <section
+        ref={messagesSectionRef}
+        id="messages"
+        data-nav-short="感言"
+        data-nav-label="感言"
+        className="relative scroll-mt-24 overflow-hidden border-t border-zinc-800/50 bg-zinc-900/30 px-4 py-20 sm:px-6 sm:py-24 md:py-32"
+      >
+        <div className="mx-auto max-w-6xl text-center">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
             <div className="mb-4 inline-block rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-xs font-semibold tracking-wider text-emerald-400 sm:text-sm">
-              感言 MESSAGES
+              感言:眼睛尿尿了
             </div>
-            <h2 className="mb-5 text-3xl font-bold text-zinc-100 sm:mb-6 sm:text-4xl md:text-5xl">Words from the Heart</h2>
-            <p className="mx-auto mb-10 max-w-2xl text-base leading-relaxed text-zinc-400 sm:mb-12 sm:text-lg">
-              向下滑动，逐字阅读这段属于全中华的感言。
-            </p>
+            <p className="mx-auto mb-8 max-w-2xl text-base leading-relaxed text-zinc-400 sm:mb-10 sm:text-lg">阅读我这段真心的感受🥺</p>
+            <p className="mx-auto mb-8 max-w-2xl text-base leading-relaxed text-zinc-400 sm:mb-10 sm:text-lg">有你，有我，有全中华！🥰</p>
           </motion.div>
 
           {/* Scroll-interactive Teleprompter */}
@@ -737,6 +817,8 @@ export default function Home() {
       {/* SECTION 4: 寻找自己 (Find Yourself / Login Grid) */}
       <section
         id="login-section"
+        data-nav-short="登录"
+        data-nav-label="登录"
         className="relative min-h-screen scroll-mt-24 border-t border-zinc-800/50 bg-zinc-950 px-4 py-20 sm:px-6 sm:py-24"
       >
         <div className="pointer-events-none absolute left-1/2 top-1/2 -z-10 h-[520px] w-full max-w-4xl -translate-x-1/2 -translate-y-1/2 rounded-full bg-blue-600/10 blur-[120px]" />
