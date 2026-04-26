@@ -1,9 +1,74 @@
 import Image from "next/image";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { LogoutButton } from "@/components/logout-button";
 import { getSessionFromServerCookies } from "@/lib/auth/session";
 import { getSupabaseAdminClient } from "@/lib/supabase/server";
+
+const editorialSerifClass = "font-serif";
+
+type DashboardMessage = {
+  id: string;
+  author_name: string | null;
+  content: string;
+  created_at: string;
+};
+
+const messageDateFormatter = new Intl.DateTimeFormat("en-MY", {
+  year: "numeric",
+  month: "short",
+  day: "numeric",
+});
+
+function formatMessageDate(dateInput: string) {
+  return messageDateFormatter.format(new Date(dateInput));
+}
+
+function buildDashboardBackgroundStyle(sessionLoginId: string, backgroundNumber: string) {
+  const uploadedBackgroundCandidates = [
+    `/dashboard-backgrounds/${sessionLoginId}.webp`,
+    `/dashboard-backgrounds/${sessionLoginId}.png`,
+    `/dashboard-backgrounds/${sessionLoginId}.jpg`,
+    `/dashboard-backgrounds/${sessionLoginId}.jpeg`,
+  ];
+  const fallbackBackgroundCandidates = [
+    `/card-backgrounds/bg-${backgroundNumber}.jpg`,
+    "/image_d57cdc.png",
+  ];
+  const backgroundLayers = [
+    "linear-gradient(118deg, rgba(218, 229, 221, 0.88) 0%, rgba(169, 197, 196, 0.52) 38%, rgba(63, 87, 88, 0.72) 100%)",
+    "radial-gradient(circle at 18% 82%, rgba(254, 239, 188, 0.32), transparent 36%)",
+    "radial-gradient(circle at 86% 22%, rgba(139, 212, 221, 0.24), transparent 34%)",
+    ...uploadedBackgroundCandidates.map((path) => `url("${path}")`),
+    ...fallbackBackgroundCandidates.map((path) => `url("${path}")`),
+  ];
+
+  return {
+    backgroundImage: backgroundLayers.join(", "),
+    backgroundSize: [
+      "cover",
+      "56rem 56rem",
+      "48rem 48rem",
+      ...uploadedBackgroundCandidates.map(() => "cover"),
+      ...fallbackBackgroundCandidates.map(() => "cover"),
+    ].join(", "),
+    backgroundPosition: [
+      "center",
+      "12% 86%",
+      "88% 18%",
+      ...uploadedBackgroundCandidates.map(() => "center"),
+      ...fallbackBackgroundCandidates.map(() => "center"),
+    ].join(", "),
+    backgroundRepeat: [
+      "no-repeat",
+      "no-repeat",
+      "no-repeat",
+      ...uploadedBackgroundCandidates.map(() => "no-repeat"),
+      ...fallbackBackgroundCandidates.map(() => "no-repeat"),
+    ].join(", "),
+  };
+}
 
 export default async function DashboardPage() {
   const session = await getSessionFromServerCookies();
@@ -12,27 +77,22 @@ export default async function DashboardPage() {
     redirect("/");
   }
 
-  let messages: {
-    id: string;
-    author_name: string | null;
-    content: string;
-    created_at: string;
-  }[] = [];
+  let message: DashboardMessage | null = null;
   let loadError: string | null = null;
 
   try {
     const supabase = getSupabaseAdminClient();
-    // This exact line ensures they ONLY see their own dedicated messages.
     const { data, error } = await supabase
       .from("messages")
       .select("id,author_name,content,created_at")
       .eq("member_id", session.memberId)
-      .order("created_at", { ascending: false });
+      .order("created_at", { ascending: false })
+      .limit(1);
 
     if (error) {
-      loadError = "Unable to load your messages right now.";
+      loadError = "Unable to load your message right now.";
     } else {
-      messages = data ?? [];
+      message = data?.[0] ?? null;
     }
   } catch {
     loadError = "Service configuration is incomplete. Please contact admin.";
@@ -40,112 +100,131 @@ export default async function DashboardPage() {
 
   const profilePicPath = `/profiles/${session.loginId}.png`;
   const match = session.loginId.match(/\d+/);
-  const bgNumber = match ? match[0] : "1";
-  const uploadedBackgroundPath = `/card-backgrounds/bg-${bgNumber}.jpg`;
-  const fullBackgroundStyle = {
-    backgroundImage: `linear-gradient(120deg, rgba(146, 182, 177, 0.58) 0%, rgba(128, 168, 160, 0.42) 42%, rgba(86, 114, 114, 0.62) 100%), url("${uploadedBackgroundPath}"), url("/image_d57cdc.png")`,
-    backgroundSize: "cover, cover, cover",
-    backgroundPosition: "center, center, center",
-    backgroundRepeat: "no-repeat, no-repeat, no-repeat",
-  };
+  const backgroundNumber = match ? match[0] : "1";
+  const backgroundStyle = buildDashboardBackgroundStyle(session.loginId, backgroundNumber);
+  const messageDate = message ? formatMessageDate(message.created_at) : "Waiting";
 
   return (
-    <div className="relative min-h-screen overflow-hidden pb-24 font-sans text-white selection:bg-white/25">
-      <div className="fixed inset-0 -z-20" style={fullBackgroundStyle} />
-      <div className="fixed inset-0 -z-10 bg-black/10 backdrop-blur-[2px]" />
+    <div
+      id="top"
+      className="relative min-h-screen overflow-hidden bg-[#dbe4de] text-[#f9f8f4] selection:bg-white/25 selection:text-white"
+    >
+      <div className="fixed inset-0 -z-30" style={backgroundStyle} />
+      <div className="fixed inset-0 -z-20 bg-[linear-gradient(180deg,rgba(14,18,22,0.08),rgba(14,18,22,0.18)_55%,rgba(11,14,17,0.34))]" />
+      <div className="fixed inset-0 -z-10 backdrop-blur-[3px]" />
 
-      <header className="sticky top-0 z-40 border-b border-white/20 bg-[#8eb8b5]/20 px-4 py-4 backdrop-blur-md md:px-8">
-        <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-4">
-          <div className="font-serif text-3xl leading-none text-white">&bull;</div>
-          <span className="font-serif text-[1.9rem] font-semibold tracking-wide text-white">clear-path</span>
-
-          <nav className="hidden items-center gap-10 text-xs font-semibold tracking-[0.22em] text-white/90 lg:flex">
-            <span>ABOUT</span>
-            <span>SERVICES</span>
-            <span className="border-b border-white pb-1">STORIES</span>
-            <span>JOURNAL</span>
-          </nav>
-
-          <div className="[&_button]:rounded-full [&_button]:border-white/60 [&_button]:bg-white/90 [&_button]:px-5 [&_button]:py-2.5 [&_button]:text-xs [&_button]:font-bold [&_button]:uppercase [&_button]:tracking-[0.16em] [&_button]:text-[#2f4f4c] [&_button]:hover:bg-white">
-            <LogoutButton />
+      <main className="mx-auto w-full max-w-7xl px-5 py-8 md:px-8 md:py-10">
+        <section className="relative grid min-h-[calc(100vh-4rem)] items-end gap-12 overflow-hidden py-10 lg:grid-cols-[1.08fr_0.92fr] lg:gap-10 lg:py-14">
+          <div className="pointer-events-none absolute inset-x-[18%] top-[8%] hidden h-[34rem] opacity-90 lg:block">
+            <svg
+              aria-hidden="true"
+              className="h-full w-full"
+              fill="none"
+              viewBox="0 0 700 560"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path d="M58 468C178 252 311 135 514 36" stroke="rgba(255,255,255,0.48)" strokeWidth="1.8" />
+              <path d="M124 486C228 281 370 160 563 66" stroke="rgba(255,255,255,0.25)" strokeWidth="1.1" />
+            </svg>
           </div>
-        </div>
-      </header>
 
-      <main className="mx-auto w-full max-w-7xl px-6 pb-8 pt-16 md:pt-20">
-        <section className="grid gap-12 lg:grid-cols-[1.15fr_0.85fr] lg:items-end">
-          <div>
-            <h1 className="max-w-4xl font-serif text-[3.6rem] leading-[0.95] tracking-tight text-white drop-shadow-[0_12px_30px_rgba(0,0,0,0.2)] sm:text-[4.6rem] md:text-[5.6rem]">
-              A Space That
+          <div className="relative z-10 pt-8 lg:pt-16">
+            <h1
+              className={`${editorialSerifClass} max-w-[7ch] text-[4.45rem] leading-[0.82] tracking-[-0.05em] text-white drop-shadow-[0_12px_32px_rgba(0,0,0,0.16)] sm:text-[5.9rem] md:text-[7.4rem] lg:text-[8.7rem]`}
+            >
+              A Place
               <br />
-              Holds Your
+              That Keeps
               <br />
-              Messages.
+              Your Words.
             </h1>
-          </div>
-
-          <div className="rounded-3xl border border-white/35 bg-white/18 p-6 shadow-[0_14px_40px_rgba(0,0,0,0.18)] backdrop-blur-xl md:p-8">
-            <div className="mb-5 flex items-center gap-4">
-              <div className="relative h-14 w-14 overflow-hidden rounded-full border border-white/60">
-                <Image src={profilePicPath} alt="Your Profile" fill className="object-cover" />
-              </div>
-              <p className="font-serif text-xl italic text-white/95">Dedicated Space</p>
-            </div>
-
-            <h2 className="mb-3 font-serif text-3xl leading-tight text-white md:text-4xl">
-              Welcome, {session.name || session.loginId}
-            </h2>
-            <p className="text-base leading-relaxed text-white/88 md:text-lg">
-              Every message below is private and only for you. You are viewing your own dedicated
-              space, inspired by the same editorial palette as the reference design.
+            <p className="mt-8 max-w-sm text-sm leading-7 text-white/68 sm:text-[0.96rem]">
+              Built as your own quiet dashboard: soft, cinematic, and personal. When you upload a
+              custom background later, this page will automatically take on that new mood.
             </p>
           </div>
-        </section>
 
-        <section className="mt-14">
-          {loadError ? (
-            <div className="rounded-2xl border border-red-200/60 bg-red-50/80 p-6 text-center font-serif text-red-700 shadow-lg backdrop-blur-md">
-              {loadError}
-            </div>
-          ) : messages.length === 0 ? (
-            <div className="rounded-3xl border border-white/40 bg-white/20 py-24 text-center shadow-xl backdrop-blur-xl">
-              <p className="font-serif text-2xl italic text-white/90">No messages have been inscribed yet.</p>
-            </div>
-          ) : (
-            <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-              {messages.map((message) => (
-                <article
-                  key={message.id}
-                  className="group flex flex-col rounded-[2rem] border border-white/50 bg-white/16 p-7 shadow-[0_10px_35px_rgba(0,0,0,0.14)] backdrop-blur-xl transition-all duration-500 hover:-translate-y-1.5 hover:bg-white/22"
-                >
-                  <div className="mb-5 flex items-start justify-between">
-                    <p className="text-[0.72rem] font-semibold uppercase tracking-[0.22em] text-white/80">
-                      For You Only
-                    </p>
-                    <span className="font-serif text-5xl leading-none text-white/30">&quot;</span>
-                  </div>
-
-                  <p className="mb-7 flex-grow whitespace-pre-wrap text-base font-light leading-loose text-white/95">
-                    {message.content}
+          <div className="relative z-10 flex justify-end">
+            <div className="w-full max-w-xl rounded-[2.35rem] border border-white/18 bg-white/[0.12] p-6 shadow-[0_26px_90px_rgba(8,12,18,0.22)] backdrop-blur-[24px] md:p-8">
+              <div className="flex items-start justify-between gap-5">
+                <div className="max-w-sm">
+                  <p className="text-[0.7rem] font-semibold uppercase tracking-[0.34em] text-white/64">
+                    Your Edition
                   </p>
+                  <h2 className={`${editorialSerifClass} mt-4 text-4xl leading-none text-white sm:text-5xl`}>
+                    Welcome,
+                    <br />
+                    {(session.name || session.loginId).trim()}
+                  </h2>
+                </div>
 
-                  <div className="mt-auto flex items-center justify-between border-t border-white/35 pt-4">
-                    <span className="text-sm italic text-white/85">From your teammate</span>
-                    <time
-                      dateTime={message.created_at}
-                      className="text-xs font-semibold uppercase tracking-[0.16em] text-white/75"
-                    >
-                      {new Date(message.created_at).toLocaleDateString("en-MY", {
-                        year: "numeric",
-                        month: "short",
-                        day: "numeric",
-                      })}
+                <div className="flex shrink-0 flex-col items-end gap-3">
+                  <div className="relative h-16 w-16 overflow-hidden rounded-full border border-white/35 bg-white/10 shadow-[0_8px_24px_rgba(0,0,0,0.16)] sm:h-20 sm:w-20">
+                    <Image src={profilePicPath} alt="Your profile" fill className="object-cover" />
+                  </div>
+                  <div className="[&_button]:!rounded-full [&_button]:!border-white/30 [&_button]:!bg-white/92 [&_button]:!px-4 [&_button]:!py-2 [&_button]:!text-[0.68rem] [&_button]:!font-bold [&_button]:!uppercase [&_button]:!tracking-[0.18em] [&_button]:!text-[#35524e] [&_button]:hover:!bg-white">
+                    <LogoutButton />
+                  </div>
+                </div>
+              </div>
+
+              <p className="mt-6 max-w-lg text-[0.98rem] leading-8 text-white/80 sm:text-[1.02rem]">
+                This is your private page. Each member has one dedicated message, and yours is
+                displayed right here in this edition card.
+              </p>
+
+              <div className="mt-8 overflow-hidden rounded-[1.85rem] border border-white/16 bg-black/12 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
+                <div className="border-b border-white/12 px-5 py-4 sm:px-6">
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <p className="text-[0.68rem] font-semibold uppercase tracking-[0.3em] text-white/62">
+                        Private Note
+                      </p>
+                      <p className="mt-2 text-sm text-white/74">
+                        {message?.author_name?.trim() || "A teammate from QZH20"}
+                      </p>
+                    </div>
+                    <time className="text-sm text-white/72" dateTime={message?.created_at}>
+                      {messageDate}
                     </time>
                   </div>
-                </article>
-              ))}
+                </div>
+
+                <div className="px-5 py-6 sm:px-6 sm:py-7">
+                  {loadError ? (
+                    <div className="rounded-[1.35rem] border border-rose-100/30 bg-rose-50/75 px-4 py-4 text-sm leading-7 text-[#7a3035] shadow-[0_12px_30px_rgba(86,29,33,0.12)]">
+                      {loadError}
+                    </div>
+                  ) : message ? (
+                    <>
+                      <p className={`${editorialSerifClass} text-5xl leading-none text-white/24`}>&quot;</p>
+                      <p className="mt-3 whitespace-pre-wrap text-[1rem] leading-8 text-white/92 sm:text-[1.05rem] sm:leading-9">
+                        {message.content}
+                      </p>
+                    </>
+                  ) : (
+                    <div className="rounded-[1.35rem] border border-dashed border-white/18 bg-white/[0.05] px-4 py-6 text-white/74">
+                      <p className={`${editorialSerifClass} text-3xl leading-none text-white`}>
+                        No message yet.
+                      </p>
+                      <p className="mt-4 text-sm leading-7 sm:text-[0.98rem]">
+                        Once your teammate writes your note, it will appear here automatically.
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="mt-8 flex flex-wrap gap-3">
+                <Link
+                  className="inline-flex items-center gap-3 rounded-full border border-white/20 bg-white/8 px-6 py-3 text-[0.76rem] font-semibold uppercase tracking-[0.22em] text-white/84 transition-colors hover:bg-white/14"
+                  href="/#memories"
+                >
+                  Back to Memories
+                </Link>
+              </div>
             </div>
-          )}
+          </div>
         </section>
       </main>
     </div>

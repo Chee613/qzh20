@@ -187,8 +187,12 @@ export class SlideController {
   }
 
   private setupObserver(): void {
+    const thresholds = Array.from(
+      new Set([0, this.threshold * 0.5, this.threshold, 0.75, 1].map((value) => Number(value.toFixed(2)))),
+    ).sort((left, right) => left - right);
+
     this.observer = new IntersectionObserver(this.handleIntersection, {
-      threshold: this.threshold,
+      threshold: thresholds,
     });
 
     this.sections.forEach((section) => {
@@ -197,9 +201,23 @@ export class SlideController {
   }
 
   private readonly handleIntersection = (entries: IntersectionObserverEntry[]): void => {
+    const viewportCenter = window.innerHeight * 0.5;
     const visibleEntries = entries
-      .filter((entry) => entry.isIntersecting && entry.intersectionRatio >= this.threshold)
-      .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+      .filter((entry) => entry.isIntersecting)
+      .sort((leftEntry, rightEntry) => {
+        const leftTarget = leftEntry.target as HTMLElement;
+        const rightTarget = rightEntry.target as HTMLElement;
+        const leftRect = leftTarget.getBoundingClientRect();
+        const rightRect = rightTarget.getBoundingClientRect();
+        const leftCenterDistance = Math.abs(leftRect.top + leftRect.height * 0.5 - viewportCenter);
+        const rightCenterDistance = Math.abs(rightRect.top + rightRect.height * 0.5 - viewportCenter);
+
+        if (leftCenterDistance !== rightCenterDistance) {
+          return leftCenterDistance - rightCenterDistance;
+        }
+
+        return rightEntry.intersectionRatio - leftEntry.intersectionRatio;
+      });
 
     if (visibleEntries.length === 0) {
       return;

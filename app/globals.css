@@ -2,12 +2,14 @@
 
 html {
   scroll-behavior: smooth;
-  scroll-snap-type: y mandatory;
+  scroll-snap-type: y proximity;
 }
 
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --font-geist-sans: Arial, Helvetica, sans-serif;
+  --font-geist-mono: "Courier New", monospace;
 }
 
 @theme inline {
@@ -32,8 +34,18 @@ body {
 
 section {
   min-height: 100vh;
+  scroll-snap-align: none;
+  scroll-snap-stop: normal;
+}
+
+.snap-lock-section {
   scroll-snap-align: start;
   scroll-snap-stop: always;
+}
+
+.snap-free-section {
+  scroll-snap-align: none;
+  scroll-snap-stop: normal;
 }
 
 .nav-dots {
