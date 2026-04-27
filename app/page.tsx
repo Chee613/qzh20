@@ -1712,36 +1712,23 @@ export default function Home() {
                       <div key={member.id} className="w-[calc((100%-1rem)/2)] sm:w-[calc((100%-2rem)/3)] lg:w-[calc((100%-4.5rem)/4)]">
                         <motion.button
                           type="button"
-                          whileHover={{ scale: 1.06, zIndex: 10, borderColor: "#3b82f6" }}
+                          whileHover={{ scale: 1.04, zIndex: 10 }}
                           whileTap={{ scale: 0.97 }}
                           onClick={() => setSelectedMemberId(member.id)}
-                          className="group relative w-full aspect-[3/4] overflow-hidden rounded-2xl border-2 border-zinc-800 bg-zinc-900 shadow-lg transition-colors"
+                          className="group relative w-full overflow-visible bg-transparent transition-transform"
                         >
-                          {/* Fallback text if image fails to load */}
-                          <div className="absolute inset-0 flex flex-col items-center justify-center bg-zinc-900 px-3 text-center font-bold text-zinc-600 opacity-100 transition-opacity">
-                            <span className="text-[15px] text-zinc-400">{member.name}</span>
-                            <span className="mt-1 text-[12px] font-normal tracking-[0.18em] text-zinc-500">
-                              #{member.displayId}
-                            </span>
-                          </div>
-
                           <Image
                             src={member.image}
                             alt={member.name}
                             width={1200}
                             height={1600}
-                            className="relative z-10 h-full w-full object-cover object-center"
+                            unoptimized
+                            className="relative z-10 h-auto w-full object-contain object-center"
                             onError={(event) => {
                               event.currentTarget.style.opacity = "0";
                             }}
                           />
                         </motion.button>
-
-                        <div className="mt-2 rounded-xl border border-amber-200/40 bg-gradient-to-b from-amber-50/95 to-amber-200/85 px-3 py-2 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_8px_16px_rgba(0,0,0,0.22)]">
-                          <p className="font-serif text-[12px] font-semibold tracking-[0.18em] text-amber-900">
-                            {member.name}
-                          </p>
-                        </div>
                       </div>
                     ))}
                   </div>
@@ -1789,6 +1776,7 @@ export default function Home() {
                       alt="Selected profile"
                       width={1024}
                       height={1024}
+                      unoptimized
                       className="h-full w-full object-cover"
                     />
                   </div>

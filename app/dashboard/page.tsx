@@ -1,5 +1,4 @@
 import Image from "next/image";
-import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { LogoutButton } from "@/components/logout-button";
@@ -7,6 +6,7 @@ import { getSessionFromServerCookies } from "@/lib/auth/session";
 import { getSupabaseAdminClient } from "@/lib/supabase/server";
 
 const editorialSerifClass = "font-serif";
+const MEMBER_NICKNAMES: Partial<Record<string, string>> = {};
 
 type DashboardMessage = {
   id: string;
@@ -103,6 +103,8 @@ export default async function DashboardPage() {
   const backgroundNumber = match ? match[0] : "1";
   const backgroundStyle = buildDashboardBackgroundStyle(session.loginId, backgroundNumber);
   const messageDate = message ? formatMessageDate(message.created_at) : "Waiting";
+  const displayName = (session.name || session.loginId).trim();
+  const displayNickname = MEMBER_NICKNAMES[session.loginId] ?? displayName;
 
   return (
     <div
@@ -114,7 +116,7 @@ export default async function DashboardPage() {
       <div className="fixed inset-0 -z-10 backdrop-blur-[3px]" />
 
       <main className="mx-auto w-full max-w-7xl px-5 py-8 md:px-8 md:py-10">
-        <section className="relative grid min-h-[calc(100vh-4rem)] items-end gap-12 overflow-hidden py-10 lg:grid-cols-[1.08fr_0.92fr] lg:gap-10 lg:py-14">
+        <section className="relative grid min-h-[calc(100vh-4rem)] items-start gap-12 overflow-hidden py-10 lg:grid-cols-[1.08fr_0.92fr] lg:gap-10 lg:py-14">
           <div className="pointer-events-none absolute inset-x-[18%] top-[8%] hidden h-[34rem] opacity-90 lg:block">
             <svg
               aria-hidden="true"
@@ -128,100 +130,64 @@ export default async function DashboardPage() {
             </svg>
           </div>
 
-          <div className="relative z-10 pt-8 lg:pt-16">
-            <h1
-              className={`${editorialSerifClass} max-w-[7ch] text-[4.45rem] leading-[0.82] tracking-[-0.05em] text-white drop-shadow-[0_12px_32px_rgba(0,0,0,0.16)] sm:text-[5.9rem] md:text-[7.4rem] lg:text-[8.7rem]`}
-            >
-              A Place
-              <br />
-              That Keeps
-              <br />
-              Your Words.
-            </h1>
-            <p className="mt-8 max-w-sm text-sm leading-7 text-white/68 sm:text-[0.96rem]">
-              Built as your own quiet dashboard: soft, cinematic, and personal. When you upload a
-              custom background later, this page will automatically take on that new mood.
-            </p>
+          <div className="relative z-10 flex min-h-[28rem] items-end lg:min-h-[42rem]">
+            <div className="relative h-[28rem] w-full overflow-hidden sm:h-[34rem] lg:h-[42rem]">
+              <Image
+                src={profilePicPath}
+                alt={`${session.name || session.loginId} profile`}
+                fill
+                priority
+                sizes="(max-width: 1024px) 100vw, 52vw"
+                unoptimized
+                className="object-contain object-bottom"
+              />
+            </div>
           </div>
 
-          <div className="relative z-10 flex justify-end">
-            <div className="w-full max-w-xl rounded-[2.35rem] border border-white/18 bg-white/[0.12] p-6 shadow-[0_26px_90px_rgba(8,12,18,0.22)] backdrop-blur-[24px] md:p-8">
+          <div className="relative z-10 flex justify-end self-start pt-2 lg:pt-6">
+            <div className="flex min-h-[50vh] w-full max-w-xl flex-col rounded-[2.35rem] border border-white/18 bg-white/[0.12] p-6 shadow-[0_26px_90px_rgba(8,12,18,0.22)] backdrop-blur-[24px] md:min-h-[56vh] md:p-8">
               <div className="flex items-start justify-between gap-5">
                 <div className="max-w-sm">
                   <p className="text-[0.7rem] font-semibold uppercase tracking-[0.34em] text-white/64">
-                    Your Edition
+                    Nickname
                   </p>
                   <h2 className={`${editorialSerifClass} mt-4 text-4xl leading-none text-white sm:text-5xl`}>
-                    Welcome,
-                    <br />
-                    {(session.name || session.loginId).trim()}
+                    {displayNickname}
                   </h2>
                 </div>
 
                 <div className="flex shrink-0 flex-col items-end gap-3">
-                  <div className="relative h-16 w-16 overflow-hidden rounded-full border border-white/35 bg-white/10 shadow-[0_8px_24px_rgba(0,0,0,0.16)] sm:h-20 sm:w-20">
-                    <Image src={profilePicPath} alt="Your profile" fill className="object-cover" />
-                  </div>
                   <div className="[&_button]:!rounded-full [&_button]:!border-white/30 [&_button]:!bg-white/92 [&_button]:!px-4 [&_button]:!py-2 [&_button]:!text-[0.68rem] [&_button]:!font-bold [&_button]:!uppercase [&_button]:!tracking-[0.18em] [&_button]:!text-[#35524e] [&_button]:hover:!bg-white">
                     <LogoutButton />
                   </div>
                 </div>
               </div>
 
-              <p className="mt-6 max-w-lg text-[0.98rem] leading-8 text-white/80 sm:text-[1.02rem]">
-                This is your private page. Each member has one dedicated message, and yours is
-                displayed right here in this edition card.
-              </p>
-
-              <div className="mt-8 overflow-hidden rounded-[1.85rem] border border-white/16 bg-black/12 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
-                <div className="border-b border-white/12 px-5 py-4 sm:px-6">
-                  <div className="flex items-start justify-between gap-4">
-                    <div>
-                      <p className="text-[0.68rem] font-semibold uppercase tracking-[0.3em] text-white/62">
-                        Private Note
-                      </p>
-                      <p className="mt-2 text-sm text-white/74">
-                        {message?.author_name?.trim() || "A teammate from QZH20"}
-                      </p>
-                    </div>
-                    <time className="text-sm text-white/72" dateTime={message?.created_at}>
+              <div className="mt-6 flex-1 max-w-lg">
+                {loadError ? (
+                  <p className="text-[0.98rem] leading-8 text-rose-100 sm:text-[1.02rem]">{loadError}</p>
+                ) : message ? (
+                  <>
+                    <p className="text-[0.68rem] font-semibold uppercase tracking-[0.3em] text-white/60">
+                      {message?.author_name?.trim() || displayName}
+                    </p>
+                    <p className="mt-4 whitespace-pre-wrap text-[1rem] leading-8 text-white/92 sm:text-[1.05rem] sm:leading-9">
+                      {message.content}
+                    </p>
+                    <time className="mt-5 block text-sm text-white/70" dateTime={message.created_at}>
                       {messageDate}
                     </time>
-                  </div>
-                </div>
-
-                <div className="px-5 py-6 sm:px-6 sm:py-7">
-                  {loadError ? (
-                    <div className="rounded-[1.35rem] border border-rose-100/30 bg-rose-50/75 px-4 py-4 text-sm leading-7 text-[#7a3035] shadow-[0_12px_30px_rgba(86,29,33,0.12)]">
-                      {loadError}
-                    </div>
-                  ) : message ? (
-                    <>
-                      <p className={`${editorialSerifClass} text-5xl leading-none text-white/24`}>&quot;</p>
-                      <p className="mt-3 whitespace-pre-wrap text-[1rem] leading-8 text-white/92 sm:text-[1.05rem] sm:leading-9">
-                        {message.content}
-                      </p>
-                    </>
-                  ) : (
-                    <div className="rounded-[1.35rem] border border-dashed border-white/18 bg-white/[0.05] px-4 py-6 text-white/74">
-                      <p className={`${editorialSerifClass} text-3xl leading-none text-white`}>
-                        No message yet.
-                      </p>
-                      <p className="mt-4 text-sm leading-7 sm:text-[0.98rem]">
-                        Once your teammate writes your note, it will appear here automatically.
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div className="mt-8 flex flex-wrap gap-3">
-                <Link
-                  className="inline-flex items-center gap-3 rounded-full border border-white/20 bg-white/8 px-6 py-3 text-[0.76rem] font-semibold uppercase tracking-[0.22em] text-white/84 transition-colors hover:bg-white/14"
-                  href="/#memories"
-                >
-                  Back to Memories
-                </Link>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-[0.68rem] font-semibold uppercase tracking-[0.3em] text-white/60">
+                      Private Note
+                    </p>
+                    <p className="mt-4 text-[0.98rem] leading-8 text-white/78 sm:text-[1.02rem]">
+                      No message yet. Once your teammate writes your note, it will appear here automatically.
+                    </p>
+                  </>
+                )}
               </div>
             </div>
           </div>
