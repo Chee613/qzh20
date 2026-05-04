@@ -1,6 +1,6 @@
 # QZH20 Message Portal
 
-MVP website for committee members to log in with birthday password (YYYYMMDD)
+MVP website for committee members to log in with a passkey
 and view only their own messages.
 
 ## Tech Stack
@@ -24,7 +24,10 @@ and view only their own messages.
 Run in this order:
 
 1. `supabase/migrations/20260409_001_init.sql`
-2. `supabase/seed.sql`
+2. `supabase/migrations/20260428_001_add_member_profiles.sql`
+3. `supabase/migrations/20260428_002_add_member_profile_passkeys.sql`
+4. `supabase/migrations/20260430_001_cleanup_committee_members.sql`
+5. `supabase/seed.sql`
 
 ## Local Development
 
@@ -49,11 +52,11 @@ npm run test
 
 - See `docs/vercel-deployment-checklist.md` for pre-deploy and post-deploy steps.
 
-## Seed Test Accounts
+## Login Format
 
-- login ID: `zhihao`, password: `20080512`
-- login ID: `xinyi`, password: `20070203`
-- login ID: `junkai`, password: `20061130`
+- Login ID: `member1` ... `member46`
+- Passkey format: `MMDD` + 4-letter secret code
+- Example: if birthday is March 7 and secret code is `srls`, the passkey is `0307srls`
 
 ## Implemented Features
 
