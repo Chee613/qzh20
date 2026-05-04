@@ -10,7 +10,7 @@ type LoginFormProps = {
 export function LoginForm({ prefilledLoginId }: LoginFormProps) {
   const router = useRouter();
 
-  const [birthdayPassword, setBirthdayPassword] = useState("");
+  const [passkey, setPasskey] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [fallbackLoginId, setFallbackLoginId] = useState("");
@@ -31,7 +31,7 @@ export function LoginForm({ prefilledLoginId }: LoginFormProps) {
         },
         body: JSON.stringify({
           loginId: activeLoginId,
-          birthdayPassword,
+          passkey,
         }),
       });
 
@@ -76,22 +76,28 @@ export function LoginForm({ prefilledLoginId }: LoginFormProps) {
       ) : null}
 
       <div className="space-y-2">
-        <label htmlFor="birthdayPassword" className="block text-center text-xs font-medium text-zinc-400 sm:text-sm">
-          Enter your Birthday Password
+        <label htmlFor="passkey" className="block text-center text-xs font-medium text-zinc-400 sm:text-sm">
+          Enter your Passkey
         </label>
         <input
-          id="birthdayPassword"
-          name="birthdayPassword"
+          id="passkey"
+          name="passkey"
           type="password"
-          inputMode="numeric"
-          pattern="[0-9]{8}"
+          inputMode="text"
+          autoCapitalize="none"
+          autoCorrect="off"
+          spellCheck={false}
+          pattern="[0-9]{4}[A-Za-z]{4}"
           required
           autoFocus
-          value={birthdayPassword}
-          onChange={(event) => setBirthdayPassword(event.target.value)}
+          value={passkey}
+          onChange={(event) => setPasskey(event.target.value.toLowerCase())}
           className="w-full rounded-xl border border-zinc-700 bg-zinc-900/50 px-4 py-4 text-center font-mono text-xl tracking-[0.5em] text-zinc-100 shadow-inner transition-colors placeholder:tracking-normal placeholder:text-zinc-700 focus:border-blue-500/50 focus:bg-zinc-900 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
-          placeholder="YYYYMMDD"
+          placeholder="MMDDcode"
         />
+        <p className="text-center text-[0.68rem] text-zinc-500 sm:text-xs">
+          Format: birthday without year + your 4-letter secret code
+        </p>
       </div>
 
       {error ? (

@@ -1,29 +1,24 @@
 import Image from "next/image";
 import { redirect } from "next/navigation";
 
+import { DashboardBackgroundMedia } from "@/components/dashboard-background-media";
 import { LogoutButton } from "@/components/logout-button";
+import { TransparentMascotVideo } from "@/components/transparent-mascot-video";
 import { getSessionFromServerCookies } from "@/lib/auth/session";
+import { loadMascotVideoUrls } from "@/lib/mascot-videos";
 import { getSupabaseAdminClient } from "@/lib/supabase/server";
 
 const editorialSerifClass = "font-serif";
-const MEMBER_NICKNAMES: Partial<Record<string, string>> = {};
 
 type DashboardMessage = {
   id: string;
-  author_name: string | null;
   content: string;
-  created_at: string;
 };
 
-const messageDateFormatter = new Intl.DateTimeFormat("en-MY", {
-  year: "numeric",
-  month: "short",
-  day: "numeric",
-});
-
-function formatMessageDate(dateInput: string) {
-  return messageDateFormatter.format(new Date(dateInput));
-}
+type DashboardMemberProfile = {
+  name: string;
+  nickname: string;
+};
 
 function buildDashboardBackgroundStyle(sessionLoginId: string, backgroundNumber: string) {
   const uploadedBackgroundCandidates = [
@@ -78,21 +73,38 @@ export default async function DashboardPage() {
   }
 
   let message: DashboardMessage | null = null;
+  let memberProfile: DashboardMemberProfile | null = null;
   let loadError: string | null = null;
 
   try {
     const supabase = getSupabaseAdminClient();
-    const { data, error } = await supabase
-      .from("messages")
-      .select("id,author_name,content,created_at")
-      .eq("member_id", session.memberId)
-      .order("created_at", { ascending: false })
-      .limit(1);
+    const messageQuery = session.memberId
+      ? supabase
+          .from("messages")
+          .select("id,content")
+          .eq("member_id", session.memberId)
+          .order("created_at", { ascending: false })
+          .limit(1)
+      : Promise.resolve({ data: [], error: null });
 
-    if (error) {
+    const [{ data: messageData, error: messageError }, { data: profileData, error: profileError }] =
+      await Promise.all([
+        messageQuery,
+        supabase
+          .from("member_profiles")
+          .select("name,nickname")
+          .eq("login_id", session.loginId)
+          .maybeSingle(),
+      ]);
+
+    if (messageError) {
       loadError = "Unable to load your message right now.";
     } else {
-      message = data?.[0] ?? null;
+      message = messageData?.[0] ?? null;
+    }
+
+    if (!profileError && profileData) {
+      memberProfile = profileData;
     }
   } catch {
     loadError = "Service configuration is incomplete. Please contact admin.";
@@ -102,20 +114,22 @@ export default async function DashboardPage() {
   const match = session.loginId.match(/\d+/);
   const backgroundNumber = match ? match[0] : "1";
   const backgroundStyle = buildDashboardBackgroundStyle(session.loginId, backgroundNumber);
-  const messageDate = message ? formatMessageDate(message.created_at) : "Waiting";
-  const displayName = (session.name || session.loginId).trim();
-  const displayNickname = MEMBER_NICKNAMES[session.loginId] ?? displayName;
+  const displayName = (memberProfile?.name || session.name || session.loginId).trim();
+  const displayNickname = (memberProfile?.nickname || displayName).trim();
+  const mascotVideos = await loadMascotVideoUrls();
+  const dashboardMascotSrc = mascotVideos[3] ?? mascotVideos.at(-1) ?? null;
 
   return (
     <div
       id="top"
-      className="relative min-h-screen overflow-hidden bg-[#dbe4de] text-[#f9f8f4] selection:bg-white/25 selection:text-white"
+      className="relative isolate min-h-screen overflow-hidden bg-[#dbe4de] text-[#f9f8f4] selection:bg-white/25 selection:text-white"
     >
-      <div className="fixed inset-0 -z-30" style={backgroundStyle} />
-      <div className="fixed inset-0 -z-20 bg-[linear-gradient(180deg,rgba(14,18,22,0.08),rgba(14,18,22,0.18)_55%,rgba(11,14,17,0.34))]" />
-      <div className="fixed inset-0 -z-10 backdrop-blur-[3px]" />
+      <DashboardBackgroundMedia
+        backgroundStyle={backgroundStyle}
+        loginId={session.loginId}
+      />
 
-      <main className="mx-auto w-full max-w-7xl px-5 py-8 md:px-8 md:py-10">
+      <main className="relative z-10 mx-auto w-full max-w-7xl px-5 py-8 md:px-8 md:py-10">
         <section className="relative grid min-h-[calc(100vh-4rem)] items-start gap-12 overflow-hidden py-10 lg:grid-cols-[1.08fr_0.92fr] lg:gap-10 lg:py-14">
           <div className="pointer-events-none absolute inset-x-[18%] top-[8%] hidden h-[34rem] opacity-90 lg:block">
             <svg
@@ -145,15 +159,23 @@ export default async function DashboardPage() {
           </div>
 
           <div className="relative z-10 flex justify-end self-start pt-2 lg:pt-6">
-            <div className="flex min-h-[50vh] w-full max-w-xl flex-col rounded-[2.35rem] border border-white/18 bg-white/[0.12] p-6 shadow-[0_26px_90px_rgba(8,12,18,0.22)] backdrop-blur-[24px] md:min-h-[56vh] md:p-8">
+            <div className="flex min-h-[62vh] w-full max-w-xl flex-col rounded-[2.35rem] border border-white/18 bg-white/[0.12] p-6 shadow-[0_26px_90px_rgba(8,12,18,0.22)] backdrop-blur-[24px] md:min-h-[68vh] md:p-8">
               <div className="flex items-start justify-between gap-5">
                 <div className="max-w-sm">
                   <p className="text-[0.7rem] font-semibold uppercase tracking-[0.34em] text-white/64">
-                    Nickname
-                  </p>
-                  <h2 className={`${editorialSerifClass} mt-4 text-4xl leading-none text-white sm:text-5xl`}>
                     {displayNickname}
-                  </h2>
+                  </p>
+                  <div className="mt-4 flex items-center gap-3 sm:gap-4">
+                    <h2 className={`${editorialSerifClass} text-4xl leading-none text-white sm:text-5xl`}>
+                      {displayName}
+                    </h2>
+                    {dashboardMascotSrc ? (
+                      <TransparentMascotVideo
+                        src={dashboardMascotSrc}
+                        className="h-16 w-16 flex-shrink-0 sm:h-20 sm:w-20"
+                      />
+                    ) : null}
+                  </div>
                 </div>
 
                 <div className="flex shrink-0 flex-col items-end gap-3">
@@ -164,25 +186,19 @@ export default async function DashboardPage() {
               </div>
 
               <div className="mt-6 flex-1 max-w-lg">
+                <p className="text-[0.68rem] font-semibold uppercase tracking-[0.3em] text-white/60">
+                  留言
+                </p>
                 {loadError ? (
-                  <p className="text-[0.98rem] leading-8 text-rose-100 sm:text-[1.02rem]">{loadError}</p>
+                  <p className="mt-4 text-[0.98rem] leading-8 text-rose-100 sm:text-[1.02rem]">{loadError}</p>
                 ) : message ? (
                   <>
-                    <p className="text-[0.68rem] font-semibold uppercase tracking-[0.3em] text-white/60">
-                      {message?.author_name?.trim() || displayName}
-                    </p>
                     <p className="mt-4 whitespace-pre-wrap text-[1rem] leading-8 text-white/92 sm:text-[1.05rem] sm:leading-9">
                       {message.content}
                     </p>
-                    <time className="mt-5 block text-sm text-white/70" dateTime={message.created_at}>
-                      {messageDate}
-                    </time>
                   </>
                 ) : (
                   <>
-                    <p className="text-[0.68rem] font-semibold uppercase tracking-[0.3em] text-white/60">
-                      Private Note
-                    </p>
                     <p className="mt-4 text-[0.98rem] leading-8 text-white/78 sm:text-[1.02rem]">
                       No message yet. Once your teammate writes your note, it will appear here automatically.
                     </p>

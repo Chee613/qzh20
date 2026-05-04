@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 import { useEffect, useEffectEvent, useRef, useState } from "react";
 
+import { TransparentMascotVideo } from "@/components/transparent-mascot-video";
 import { SlideController } from "@/lib/SlideController";
 import {
   createEmptyMemoryManifest,
@@ -112,9 +113,15 @@ const MEMORY_BROWSER_FRIENDLY_EXTENSIONS = new Set([
   "heif",
 ]);
 const MEMORY_NEXT_OPTIMIZABLE_EXTENSIONS = new Set(["jpg", "jpeg", "png", "webp", "avif", "gif"]);
+const MASCOT_INTERACTION_MIN_DELAY_MS = 9_000;
+const MASCOT_INTERACTION_MAX_DELAY_MS = 22_000;
 
 const memoryResolvedCandidateIndexCache = new Map<string, number>();
 const memoryPreloadPromiseCache = new Map<string, Promise<number | null>>();
+
+type MascotVideoManifestResponse = {
+  videos: string[];
+};
 
 type IdleWindow = Window & {
   requestIdleCallback?: (callback: () => void, options?: { timeout: number }) => number;
@@ -460,6 +467,42 @@ function pickRandomSlideIndexes(
   );
 }
 
+function pickRandomDelay(min: number, max: number) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function pickRandomMascotInteraction(
+  videos: readonly string[],
+  previousIndex: number | null,
+): { index: number; src: string } | null {
+  if (videos.length <= 0) {
+    return null;
+  }
+
+  const eligibleIndexes = videos
+    .map((_, index) => index)
+    .filter((index) => videos.length === 1 || index !== previousIndex);
+  const nextIndex = eligibleIndexes[Math.floor(Math.random() * eligibleIndexes.length)] ?? 0;
+  const nextSrc = videos[nextIndex];
+
+  if (!nextSrc) {
+    return null;
+  }
+
+  return {
+    index: nextIndex,
+    src: nextSrc,
+  };
+}
+
+function getMascotLoopVideoSrc(videos: readonly string[], slotIndex: number) {
+  if (videos.length <= 0) {
+    return null;
+  }
+
+  return videos[slotIndex % videos.length] ?? videos[0] ?? null;
+}
+
 function getMemoryStackState(activeIndex: number, index: number, total: number) {
   const offset = (index - activeIndex + total) % total;
 
@@ -625,10 +668,43 @@ function MemoryRandomTile({ slide, slotIndex }: MemoryRandomTileProps) {
   );
 }
 
+type LoopingMascotVideoProps = {
+  src: string | null;
+  className?: string;
+  videoClassName?: string;
+};
+
+function LoopingMascotVideo({
+  src,
+  className = "",
+  videoClassName = "",
+}: LoopingMascotVideoProps) {
+  if (!src) {
+    return null;
+  }
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 22, scale: 0.94 }}
+      whileInView={{ opacity: 1, y: 0, scale: 1 }}
+      viewport={{ once: true, margin: "-80px" }}
+      transition={{ duration: 0.45, ease: "easeOut" }}
+      className={`pointer-events-none relative ${className}`}
+    >
+      <TransparentMascotVideo
+        src={src}
+        className="h-full w-full"
+        canvasClassName={videoClassName}
+      />
+    </motion.div>
+  );
+}
+
 export default function Home() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null);
   const [memorySlidesByFolder, setMemorySlidesByFolder] = useState(createEmptyMemoryManifest);
+  const [mascotInteractionVideos, setMascotInteractionVideos] = useState<string[]>([]);
   const memoryGalleries = buildMemoryGalleries(memorySlidesByFolder);
   const memoryRecentHistoryRef = useRef<number[][]>(MEMORY_GALLERY_CONFIGS.map(() => []));
 
@@ -639,10 +715,12 @@ export default function Home() {
   );
   const [isMemoriesPrimed, setIsMemoriesPrimed] = useState(false);
   const [isMemoriesVisible, setIsMemoriesVisible] = useState(false);
+  const [activeMascotInteractionSrc, setActiveMascotInteractionSrc] = useState<string | null>(null);
   const mobileMenuRef = useRef<HTMLDivElement | null>(null);
   const mobileMenuButtonRef = useRef<HTMLButtonElement | null>(null);
   const memoriesSectionRef = useRef<HTMLElement | null>(null);
   const messagesSectionRef = useRef<HTMLElement | null>(null);
+  const lastMascotInteractionIndexRef = useRef<number | null>(null);
   const teleprompterTrackRef = useRef<HTMLDivElement | null>(null);
   const teleprompterViewportRef = useRef<HTMLDivElement | null>(null);
   const teleprompterTextRef = useRef<HTMLDivElement | null>(null);
@@ -693,6 +771,9 @@ export default function Home() {
       activeMemoryItem.slides[0] ??
       createPlaceholderMemorySlide(activeMemoryItem.title, index),
   );
+  const heroLoopMascotSrc = getMascotLoopVideoSrc(mascotInteractionVideos, 0);
+  const messagesLoopMascotSrc = getMascotLoopVideoSrc(mascotInteractionVideos, 1);
+  const loginLoopMascotSrc = getMascotLoopVideoSrc(mascotInteractionVideos, 2);
 
   function getMemoryCandidatePool(gallery: MemoryGalleryItem) {
     const browserFriendlyIndexes = gallery.slides.flatMap((slide, index) =>
@@ -902,6 +983,69 @@ export default function Home() {
       isMounted = false;
     };
   }, []);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadMascotVideos() {
+      try {
+        const response = await fetch("/api/mascot-videos", { cache: "no-store" });
+
+        if (!response.ok) {
+          return;
+        }
+
+        const data: MascotVideoManifestResponse = await response.json();
+
+        if (!isMounted) {
+          return;
+        }
+
+        setMascotInteractionVideos(data.videos);
+      } catch {
+        // Keep the mascot as a static image when the videos cannot be loaded.
+      }
+    }
+
+    void loadMascotVideos();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!isMemoriesVisible) {
+      setActiveMascotInteractionSrc(null);
+      return;
+    }
+
+    if (activeMascotInteractionSrc || mascotInteractionVideos.length <= 0) {
+      return;
+    }
+
+    const delay = pickRandomDelay(
+      MASCOT_INTERACTION_MIN_DELAY_MS,
+      MASCOT_INTERACTION_MAX_DELAY_MS,
+    );
+    const timeoutId = window.setTimeout(() => {
+      const nextInteraction = pickRandomMascotInteraction(
+        mascotInteractionVideos,
+        lastMascotInteractionIndexRef.current,
+      );
+
+      if (!nextInteraction) {
+        return;
+      }
+
+      lastMascotInteractionIndexRef.current = nextInteraction.index;
+      setActiveMascotInteractionSrc(nextInteraction.src);
+    }, delay);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [activeMascotInteractionSrc, isMemoriesVisible, mascotInteractionVideos]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -1540,15 +1684,25 @@ export default function Home() {
               <Image src="/20th-logo.png" alt="20th Anniversary" fill className="object-contain drop-shadow-2xl" />
             </div>
           </div>
-          <h1 className="mb-5 text-4xl font-black leading-[1.05] tracking-tighter sm:mb-6 sm:text-5xl md:text-8xl">
-            <span className="bg-gradient-to-r from-blue-400 to-emerald-300 bg-clip-text text-transparent">
-              全中华
-            </span>
-            <br /> 专属留言板
-          </h1>
-          <p className="mx-auto max-w-2xl text-base leading-relaxed text-zinc-400 sm:text-lg md:text-2xl">
-            自：橙子🍊 机长✈️
-          </p>
+          <div className="relative mx-auto w-fit">
+            <div className="text-center">
+              <h1 className="text-4xl font-black leading-[1.05] tracking-tighter sm:text-5xl md:text-8xl">
+                <span className="bg-gradient-to-r from-blue-400 to-emerald-300 bg-clip-text text-transparent">
+                  全中华
+                </span>
+                <br /> 专属留言板
+              </h1>
+              <p className="mt-1 text-base leading-relaxed text-zinc-400 sm:text-lg md:text-2xl">
+                自：橙子🍊 机长✈️
+              </p>
+            </div>
+            <div className="pointer-events-none absolute left-full top-0 ml-2 sm:ml-3 md:ml-4">
+              <LoopingMascotVideo
+                src={heroLoopMascotSrc}
+                className="h-28 w-28 sm:h-36 sm:w-36 md:h-48 md:w-48"
+              />
+            </div>
+          </div>
         </motion.div>
       </section>
 
@@ -1620,14 +1774,45 @@ export default function Home() {
             </div>
 
             <div className="group relative mt-10 h-56 w-56 sm:h-72 sm:w-72 md:h-96 md:w-96">
-              <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-blue-500/30 to-emerald-400/30 blur-3xl transition-all duration-500 group-hover:blur-2xl" />
-              <div className="relative z-10 flex h-full w-full items-center justify-center transition-transform duration-500 hover:-translate-y-4">
+              <div
+                className={`absolute inset-0 rounded-full bg-gradient-to-tr from-blue-500/30 to-emerald-400/30 transition-all duration-500 ${
+                  activeMascotInteractionSrc ? "scale-105 blur-2xl" : "blur-3xl group-hover:blur-2xl"
+                }`}
+              />
+              <div className="relative z-10 flex h-full w-full items-center justify-center overflow-hidden transition-transform duration-500 hover:-translate-y-4">
                 <Image
                   src="/mascot.png"
                   alt="QZH20 Dinosaur Mascot"
                   fill
-                  className="object-contain drop-shadow-[0_0_40px_rgba(59,130,246,0.4)]"
+                  className={`object-contain drop-shadow-[0_0_40px_rgba(59,130,246,0.4)] transition-opacity duration-300 ${
+                    activeMascotInteractionSrc ? "opacity-0" : "opacity-100"
+                  }`}
                 />
+                <AnimatePresence>
+                  {activeMascotInteractionSrc ? (
+                    <motion.div
+                      key={activeMascotInteractionSrc}
+                      initial={{ opacity: 0, scale: 0.92, rotate: -3 }}
+                      animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                      exit={{ opacity: 0, scale: 0.96, rotate: 2 }}
+                      transition={{ duration: 0.28, ease: "easeOut" }}
+                      className="absolute inset-0"
+                    >
+                      <TransparentMascotVideo
+                        src={activeMascotInteractionSrc}
+                        loop={false}
+                        onEnded={() => {
+                          setActiveMascotInteractionSrc(null);
+                        }}
+                        onError={() => {
+                          setActiveMascotInteractionSrc(null);
+                        }}
+                        className="h-full w-full"
+                        canvasClassName="h-full w-full drop-shadow-[0_0_42px_rgba(96,165,250,0.45)]"
+                      />
+                    </motion.div>
+                  ) : null}
+                </AnimatePresence>
               </div>
             </div>
           </motion.div>
@@ -1648,11 +1833,19 @@ export default function Home() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <div className="mb-4 inline-block rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-xs font-semibold tracking-wider text-emerald-400 sm:text-sm">
-              感言:眼睛尿尿了
+            <div className="relative mx-auto mb-8 w-fit text-center sm:mb-10">
+              <div className="inline-block rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-xs font-semibold tracking-wider text-emerald-400 sm:text-sm">
+                感言:眼睛尿尿了
+              </div>
+              <p className="mt-1 text-base leading-relaxed text-zinc-400 sm:text-lg">阅读我这段真心的感受🥺</p>
+              <p className="mt-1 text-base leading-relaxed text-zinc-400 sm:text-lg">有你，有我，有全中华！🥰</p>
+              <div className="pointer-events-none absolute left-full top-0 ml-2 sm:ml-3 md:ml-4">
+                <LoopingMascotVideo
+                  src={messagesLoopMascotSrc}
+                  className="h-28 w-28 sm:h-36 sm:w-36 md:h-48 md:w-48"
+                />
+              </div>
             </div>
-            <p className="mx-auto mb-8 max-w-2xl text-base leading-relaxed text-zinc-400 sm:mb-10 sm:text-lg">阅读我这段真心的感受🥺</p>
-            <p className="mx-auto mb-8 max-w-2xl text-base leading-relaxed text-zinc-400 sm:mb-10 sm:text-lg">有你，有我，有全中华！🥰</p>
           </motion.div>
 
           {/* Scroll-interactive Teleprompter */}
@@ -1675,10 +1868,18 @@ export default function Home() {
 
         <div className="mx-auto max-w-6xl">
           <div className="mb-12 text-center sm:mb-16">
-            <h2 className="mb-4 text-3xl font-bold text-zinc-100 sm:text-4xl md:text-5xl">圈圈 ദ്ദി(˵ •̀ ᴗ - ˵ ) ✧</h2>
-            <p className="text-base text-zinc-400 sm:text-lg">
-              快找你们帅帅妹妹的头像吧！！！！
-            </p>
+            <div className="relative mx-auto w-fit text-center">
+              <h2 className="text-3xl font-bold text-zinc-100 sm:text-4xl md:text-5xl">圈圈 ദ്ദി(˵ •̀ ᴗ - ˵ ) ✧</h2>
+              <p className="mt-1 text-base text-zinc-400 sm:text-lg">
+                快找你们帅帅妹妹的头像吧！！！！  
+              </p>
+              <div className="pointer-events-none absolute left-full top-0 ml-2 sm:ml-3 md:ml-4">
+                <LoopingMascotVideo
+                  src={loginLoopMascotSrc}
+                  className="h-28 w-28 sm:h-36 sm:w-36 md:h-48 md:w-48"
+                />
+              </div>
+            </div>
           </div>
 
           {/* Grouped Grid of Members */}
