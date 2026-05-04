@@ -28,8 +28,8 @@ export async function GET() {
     try {
       const supabase = getSupabaseAdminClient();
       const { error } = await supabase
-        .from("committee_members")
-        .select("id")
+        .from("member_profiles")
+        .select("login_id")
         .limit(1);
       databaseOk = !error;
     } catch {

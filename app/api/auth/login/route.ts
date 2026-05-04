@@ -3,9 +3,9 @@ import { NextResponse } from "next/server";
 
 import { getRequestIp, logAuditEvent } from "@/lib/audit";
 import { loginBodySchema } from "@/lib/auth/login-schema";
-import { consumeLoginAttempt, resetLoginAttempts } from "@/lib/auth/rate-limit";
-import { verifyBirthdayPassword } from "@/lib/auth/password";
 import { createSessionToken, setSessionCookie } from "@/lib/auth/session";
+import { verifyPasskey } from "@/lib/auth/password";
+import { consumeLoginAttempt, resetLoginAttempts } from "@/lib/auth/rate-limit";
 import { getSupabaseAdminClient } from "@/lib/supabase/server";
 
 export async function POST(request: NextRequest) {
@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const { loginId, birthdayPassword } = parsed.data;
+  const { loginId, passkey } = parsed.data;
   const rateLimitKey = `${requestIp}:${loginId}`;
 
   const rateLimitResult = consumeLoginAttempt(rateLimitKey);
@@ -62,38 +62,49 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  let member:
+  let memberProfile:
     | {
-        id: string;
         name: string;
-        login_id: string;
-        birthday_hash: string;
+        passkey_hash: string;
       }
     | null = null;
+  let committeeMemberId: string | null = null;
 
   try {
     const supabase = getSupabaseAdminClient();
-    const { data, error } = await supabase
-      .from("committee_members")
-      .select("id,name,login_id,birthday_hash")
-      .eq("login_id", loginId)
-      .maybeSingle();
+    const [
+      { data: profileData, error: profileError },
+      { data: memberData, error: memberError },
+    ] = await Promise.all([
+      supabase
+        .from("member_profiles")
+        .select("name,passkey_hash")
+        .eq("login_id", loginId)
+        .maybeSingle(),
+      supabase
+        .from("committee_members")
+        .select("id")
+        .eq("login_id", loginId)
+        .maybeSingle(),
+    ]);
 
-    if (error) {
-      console.error("Login query failed", error);
+    if (profileError || memberError) {
+      const queryError = profileError ?? memberError;
+      console.error("Login query failed", queryError);
       logAuditEvent(
         "auth.login.query_error",
         {
           ip: requestIp,
           loginId,
-          message: error.message,
+          message: queryError?.message,
         },
         "error"
       );
       return NextResponse.json({ error: "Login failed." }, { status: 500 });
     }
 
-    member = data;
+    memberProfile = profileData;
+    committeeMemberId = memberData?.id ?? null;
   } catch (error) {
     console.error("Login runtime failed", error);
     logAuditEvent(
@@ -107,7 +118,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Login unavailable." }, { status: 500 });
   }
 
-  if (!member) {
+  if (!memberProfile) {
     logAuditEvent(
       "auth.login.invalid_credentials",
       {
@@ -122,10 +133,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const validPassword = await verifyBirthdayPassword(
-    birthdayPassword,
-    member.birthday_hash
-  );
+  const validPassword = await verifyPasskey(passkey, memberProfile.passkey_hash);
 
   if (!validPassword) {
     logAuditEvent(
@@ -145,9 +153,9 @@ export async function POST(request: NextRequest) {
   resetLoginAttempts(rateLimitKey);
 
   const token = createSessionToken({
-    memberId: member.id,
-    loginId: member.login_id,
-    name: member.name,
+    memberId: committeeMemberId,
+    loginId,
+    name: memberProfile.name,
   });
 
   const response = NextResponse.json({ ok: true });
@@ -155,8 +163,8 @@ export async function POST(request: NextRequest) {
 
   logAuditEvent("auth.login.success", {
     ip: requestIp,
-    loginId: member.login_id,
-    memberId: member.id,
+    loginId,
+    memberId: committeeMemberId,
   });
 
   return response;
