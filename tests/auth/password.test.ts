@@ -1,32 +1,37 @@
 import { describe, expect, it } from "vitest";
 
 import {
-  isValidBirthdayPassword,
-  verifyBirthdayPassword,
-  hashBirthdayPassword,
+  hashPasskey,
+  isValidPasskey,
+  normalizePasskey,
+  verifyPasskey,
 } from "@/lib/auth/password";
 
-describe("birthday password validation", () => {
-  it("accepts valid YYYYMMDD", () => {
-    expect(isValidBirthdayPassword("20080512")).toBe(true);
+describe("passkey validation", () => {
+  it("accepts valid MMDDcode", () => {
+    expect(isValidPasskey("0307srls")).toBe(true);
   });
 
   it("rejects invalid date", () => {
-    expect(isValidBirthdayPassword("20080231")).toBe(false);
+    expect(isValidPasskey("0231srls")).toBe(false);
   });
 
   it("rejects invalid format", () => {
-    expect(isValidBirthdayPassword("2008-05-12")).toBe(false);
-    expect(isValidBirthdayPassword("abc")).toBe(false);
+    expect(isValidPasskey("03-07srls")).toBe(false);
+    expect(isValidPasskey("0307sr")).toBe(false);
+  });
+
+  it("normalizes casing and whitespace", () => {
+    expect(normalizePasskey(" 0307SRLS ")).toBe("0307srls");
   });
 });
 
-describe("birthday password hashing", () => {
+describe("passkey hashing", () => {
   it("hashes and verifies correctly", async () => {
-    const plain = "20080512";
-    const hash = await hashBirthdayPassword(plain);
+    const plain = "0307srls";
+    const hash = await hashPasskey(plain);
 
-    await expect(verifyBirthdayPassword(plain, hash)).resolves.toBe(true);
-    await expect(verifyBirthdayPassword("20080513", hash)).resolves.toBe(false);
+    await expect(verifyPasskey(plain, hash)).resolves.toBe(true);
+    await expect(verifyPasskey("0308srls", hash)).resolves.toBe(false);
   });
 });

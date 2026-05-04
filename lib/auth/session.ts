@@ -9,7 +9,7 @@ export const SESSION_COOKIE_NAME = "qzh20_session";
 const SESSION_TTL_SECONDS = 60 * 60 * 24 * 7;
 
 type SessionIdentity = {
-  memberId: string;
+  memberId: string | null;
   loginId: string;
   name: string;
 };
@@ -78,7 +78,7 @@ export function verifySessionToken(token: string): SessionPayload | null {
 
   const payload = parsed as Partial<SessionPayload>;
   if (
-    typeof payload.memberId !== "string" ||
+    (payload.memberId !== null && typeof payload.memberId !== "string") ||
     typeof payload.loginId !== "string" ||
     typeof payload.name !== "string" ||
     typeof payload.exp !== "number"

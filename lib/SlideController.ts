@@ -41,6 +41,7 @@ export class SlideController {
   private currentIndex = 0;
   private isAnimating = false;
   private unlockTimerId: number | null = null;
+  private viewportSyncFrameId: number | null = null;
 
   private touchStartY: number | null = null;
   private touchStartX: number | null = null;
@@ -78,10 +79,17 @@ export class SlideController {
     document.removeEventListener("keydown", this.handleKeyDown);
     document.removeEventListener("touchstart", this.handleTouchStart);
     document.removeEventListener("touchend", this.handleTouchEnd);
+    window.removeEventListener("scroll", this.handleViewportChange);
+    window.removeEventListener("resize", this.handleViewportChange);
 
     if (this.unlockTimerId !== null) {
       window.clearTimeout(this.unlockTimerId);
       this.unlockTimerId = null;
+    }
+
+    if (this.viewportSyncFrameId !== null) {
+      window.cancelAnimationFrame(this.viewportSyncFrameId);
+      this.viewportSyncFrameId = null;
     }
 
     if (this.observer) {
@@ -153,6 +161,8 @@ export class SlideController {
     document.addEventListener("keydown", this.handleKeyDown);
     document.addEventListener("touchstart", this.handleTouchStart, { passive: true });
     document.addEventListener("touchend", this.handleTouchEnd, { passive: true });
+    window.addEventListener("scroll", this.handleViewportChange, { passive: true });
+    window.addEventListener("resize", this.handleViewportChange);
   }
 
   private createNavDots(): void {
@@ -200,41 +210,12 @@ export class SlideController {
     });
   }
 
-  private readonly handleIntersection = (entries: IntersectionObserverEntry[]): void => {
-    const viewportCenter = window.innerHeight * 0.5;
-    const visibleEntries = entries
-      .filter((entry) => entry.isIntersecting)
-      .sort((leftEntry, rightEntry) => {
-        const leftTarget = leftEntry.target as HTMLElement;
-        const rightTarget = rightEntry.target as HTMLElement;
-        const leftRect = leftTarget.getBoundingClientRect();
-        const rightRect = rightTarget.getBoundingClientRect();
-        const leftCenterDistance = Math.abs(leftRect.top + leftRect.height * 0.5 - viewportCenter);
-        const rightCenterDistance = Math.abs(rightRect.top + rightRect.height * 0.5 - viewportCenter);
+  private readonly handleIntersection = (): void => {
+    this.scheduleViewportSync();
+  };
 
-        if (leftCenterDistance !== rightCenterDistance) {
-          return leftCenterDistance - rightCenterDistance;
-        }
-
-        return rightEntry.intersectionRatio - leftEntry.intersectionRatio;
-      });
-
-    if (visibleEntries.length === 0) {
-      return;
-    }
-
-    const targetSection = visibleEntries[0]?.target as HTMLElement | undefined;
-    if (!targetSection) {
-      return;
-    }
-
-    const nextIndex = this.sections.indexOf(targetSection);
-    if (nextIndex < 0 || nextIndex === this.currentIndex) {
-      return;
-    }
-
-    this.currentIndex = nextIndex;
-    this.updateActiveDot(nextIndex);
+  private readonly handleViewportChange = (): void => {
+    this.scheduleViewportSync();
   };
 
   private readonly handleDotClick = (event: MouseEvent): void => {
@@ -364,6 +345,65 @@ export class SlideController {
         dot.removeAttribute("aria-current");
       }
     });
+  }
+
+  private scheduleViewportSync(): void {
+    if (this.viewportSyncFrameId !== null) {
+      return;
+    }
+
+    this.viewportSyncFrameId = window.requestAnimationFrame(() => {
+      this.viewportSyncFrameId = null;
+      this.syncActiveDotToViewport();
+    });
+  }
+
+  private syncActiveDotToViewport(): void {
+    if (this.sections.length === 0 || this.isAnimating) {
+      return;
+    }
+
+    const viewportHeight = window.innerHeight;
+    const viewportCenter = viewportHeight * 0.5;
+
+    let bestIndex = -1;
+    let bestContainsCenter = false;
+    let bestVisibleHeight = -1;
+    let bestCenterDistance = Number.POSITIVE_INFINITY;
+
+    this.sections.forEach((section, index) => {
+      const rect = section.getBoundingClientRect();
+      const visibleHeight = Math.min(rect.bottom, viewportHeight) - Math.max(rect.top, 0);
+
+      if (visibleHeight <= 0) {
+        return;
+      }
+
+      const containsCenter = rect.top <= viewportCenter && rect.bottom >= viewportCenter;
+      const centerDistance = Math.abs(rect.top + rect.height * 0.5 - viewportCenter);
+
+      if (
+        bestIndex === -1 ||
+        (containsCenter && !bestContainsCenter) ||
+        (containsCenter === bestContainsCenter && visibleHeight > bestVisibleHeight) ||
+        (containsCenter === bestContainsCenter &&
+          visibleHeight === bestVisibleHeight &&
+          centerDistance < bestCenterDistance)
+      ) {
+        bestIndex = index;
+        bestContainsCenter = containsCenter;
+        bestVisibleHeight = visibleHeight;
+        bestCenterDistance = centerDistance;
+      }
+    });
+
+    const nextIndex = bestIndex >= 0 ? bestIndex : this.findClosestSectionIndex();
+    if (nextIndex === this.currentIndex) {
+      return;
+    }
+
+    this.currentIndex = nextIndex;
+    this.updateActiveDot(nextIndex);
   }
 
   private findClosestSectionIndex(): number {

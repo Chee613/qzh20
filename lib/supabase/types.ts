@@ -12,28 +12,49 @@ export interface Database {
       committee_members: {
         Row: {
           id: string;
-          name: string;
           login_id: string;
-          birthday: string;
-          birthday_hash: string;
           created_at: string;
           updated_at: string;
         };
         Insert: {
           id?: string;
-          name: string;
           login_id: string;
-          birthday: string;
-          birthday_hash: string;
           created_at?: string;
           updated_at?: string;
         };
         Update: {
           id?: string;
-          name?: string;
           login_id?: string;
-          birthday?: string;
-          birthday_hash?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      member_profiles: {
+        Row: {
+          login_id: string;
+          name: string;
+          nickname: string;
+          birthday_mmdd: string;
+          passkey_hash: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          login_id: string;
+          name: string;
+          nickname: string;
+          birthday_mmdd: string;
+          passkey_hash: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          login_id?: string;
+          name?: string;
+          nickname?: string;
+          birthday_mmdd?: string;
+          passkey_hash?: string;
           created_at?: string;
           updated_at?: string;
         };

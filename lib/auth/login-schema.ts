@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { isValidBirthdayPassword } from "@/lib/auth/password";
+import { isValidPasskey, normalizePasskey } from "@/lib/auth/password";
 
 export const loginBodySchema = z.object({
   loginId: z
@@ -10,10 +10,10 @@ export const loginBodySchema = z.object({
     .max(64)
     .regex(/^[a-zA-Z0-9_-]+$/)
     .transform((value) => value.toLowerCase()),
-  birthdayPassword: z
+  passkey: z
     .string()
-    .trim()
-    .refine(isValidBirthdayPassword, "Birthday password must be in YYYYMMDD format"),
+    .transform(normalizePasskey)
+    .refine(isValidPasskey, "Passkey must be in MMDDcode format"),
 });
 
 export type LoginBody = z.infer<typeof loginBodySchema>;
