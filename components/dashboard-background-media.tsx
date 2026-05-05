@@ -57,7 +57,7 @@ export function DashboardBackgroundMedia({
             ref={videoRef}
             aria-hidden="true"
             autoPlay
-            className="h-full w-full object-cover object-center opacity-[0.52]"
+            className="h-[162%] w-full -translate-y-[36%] object-cover object-top opacity-[0.52] sm:h-full sm:translate-y-0 sm:object-center"
             disablePictureInPicture
             loop
             muted={isMuted}
@@ -74,14 +74,14 @@ export function DashboardBackgroundMedia({
         <div className="absolute inset-0 bg-black/16 backdrop-blur-[1.5px]" />
       </div>
 
-      <div className="fixed bottom-5 left-5 z-20">
+      <div className="fixed bottom-3 left-3 z-20 sm:bottom-5 sm:left-5">
         <button
           type="button"
           aria-pressed={!isMuted}
           onClick={() => {
             void toggleAudio();
           }}
-          className="pointer-events-auto rounded-full border border-white/20 bg-black/40 px-4 py-2 text-[0.68rem] font-bold uppercase tracking-[0.18em] text-white shadow-[0_16px_40px_rgba(0,0,0,0.28)] backdrop-blur-md transition hover:bg-black/55 focus:outline-none focus:ring-2 focus:ring-white/60"
+          className="pointer-events-auto rounded-full border border-white/20 bg-black/40 px-3 py-1.5 text-[0.62rem] font-bold uppercase tracking-[0.18em] text-white shadow-[0_16px_40px_rgba(0,0,0,0.28)] backdrop-blur-md transition hover:bg-black/55 focus:outline-none focus:ring-2 focus:ring-white/60 sm:px-4 sm:py-2 sm:text-[0.68rem]"
         >
           {audioButtonLabel}
         </button>

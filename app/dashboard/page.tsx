@@ -122,15 +122,15 @@ export default async function DashboardPage() {
   return (
     <div
       id="top"
-      className="relative isolate min-h-screen overflow-hidden bg-[#dbe4de] text-[#f9f8f4] selection:bg-white/25 selection:text-white"
+      className="relative isolate min-h-[var(--app-screen-height)] overflow-hidden bg-[#dbe4de] text-[#f9f8f4] selection:bg-white/25 selection:text-white"
     >
       <DashboardBackgroundMedia
         backgroundStyle={backgroundStyle}
         loginId={session.loginId}
       />
 
-      <main className="relative z-10 mx-auto w-full max-w-7xl px-5 py-8 md:px-8 md:py-10">
-        <section className="relative grid min-h-[calc(100vh-4rem)] items-start gap-12 overflow-hidden py-10 lg:grid-cols-[1.08fr_0.92fr] lg:gap-10 lg:py-14">
+      <main className="relative z-10 mx-auto w-full max-w-7xl px-4 py-3 sm:px-5 sm:py-6 md:px-8 md:py-10">
+        <section className="relative grid min-h-[calc(var(--app-screen-height)-1.5rem)] content-start items-start gap-4 overflow-hidden py-2 sm:min-h-[calc(var(--app-screen-height)-3rem)] sm:gap-8 sm:py-4 lg:min-h-[calc(var(--app-screen-height)-4rem)] lg:grid-cols-[1.08fr_0.92fr] lg:gap-10 lg:py-14">
           <div className="pointer-events-none absolute inset-x-[18%] top-[8%] hidden h-[34rem] opacity-90 lg:block">
             <svg
               aria-hidden="true"
@@ -144,8 +144,8 @@ export default async function DashboardPage() {
             </svg>
           </div>
 
-          <div className="relative z-10 flex min-h-[28rem] items-end lg:min-h-[42rem]">
-            <div className="relative h-[28rem] w-full overflow-hidden sm:h-[34rem] lg:h-[42rem]">
+          <div className="relative z-10 flex min-h-[13.5rem] items-start sm:min-h-[22rem] sm:items-center lg:min-h-[42rem] lg:items-end">
+            <div className="relative h-[15.5rem] w-full overflow-hidden sm:h-[24rem] lg:h-[42rem]">
               <Image
                 src={profilePicPath}
                 alt={`${session.name || session.loginId} profile`}
@@ -153,53 +153,53 @@ export default async function DashboardPage() {
                 priority
                 sizes="(max-width: 1024px) 100vw, 52vw"
                 unoptimized
-                className="object-contain object-bottom"
+                className="object-contain object-top sm:object-center lg:object-bottom"
               />
             </div>
           </div>
 
-          <div className="relative z-10 flex justify-end self-start pt-2 lg:pt-6">
-            <div className="flex min-h-[62vh] w-full max-w-xl flex-col rounded-[2.35rem] border border-white/18 bg-white/[0.12] p-6 shadow-[0_26px_90px_rgba(8,12,18,0.22)] backdrop-blur-[24px] md:min-h-[68vh] md:p-8">
-              <div className="flex items-start justify-between gap-5">
+          <div className="relative z-10 flex justify-end self-start pt-0 sm:pt-1 lg:pt-6">
+            <div className="flex min-h-0 w-full max-w-xl flex-col rounded-[2rem] border border-white/18 bg-white/[0.12] p-4 shadow-[0_26px_90px_rgba(8,12,18,0.22)] backdrop-blur-[24px] sm:min-h-[24rem] sm:rounded-[2.35rem] sm:p-6 md:min-h-[68vh] md:p-8">
+              <div className="flex items-start justify-between gap-4 sm:gap-5">
                 <div className="max-w-sm">
                   <p className="text-[0.7rem] font-semibold uppercase tracking-[0.34em] text-white/64">
                     {displayNickname}
                   </p>
                   <div className="mt-4 flex items-center gap-3 sm:gap-4">
-                    <h2 className={`${editorialSerifClass} text-4xl leading-none text-white sm:text-5xl`}>
+                    <h2 className={`${editorialSerifClass} text-3xl leading-none text-white sm:text-5xl`}>
                       {displayName}
                     </h2>
                     {dashboardMascotSrc ? (
                       <TransparentMascotVideo
                         src={dashboardMascotSrc}
-                        className="h-16 w-16 flex-shrink-0 sm:h-20 sm:w-20"
+                        className="h-14 w-14 flex-shrink-0 sm:h-20 sm:w-20"
                       />
                     ) : null}
                   </div>
                 </div>
 
                 <div className="flex shrink-0 flex-col items-end gap-3">
-                  <div className="[&_button]:!rounded-full [&_button]:!border-white/30 [&_button]:!bg-white/92 [&_button]:!px-4 [&_button]:!py-2 [&_button]:!text-[0.68rem] [&_button]:!font-bold [&_button]:!uppercase [&_button]:!tracking-[0.18em] [&_button]:!text-[#35524e] [&_button]:hover:!bg-white">
+                  <div className="[&_button]:!rounded-full [&_button]:!border-white/30 [&_button]:!bg-white/92 [&_button]:!px-3 [&_button]:!py-1.5 [&_button]:!text-[0.62rem] [&_button]:!font-bold [&_button]:!uppercase [&_button]:!tracking-[0.18em] [&_button]:!text-[#35524e] [&_button]:hover:!bg-white sm:[&_button]:!px-4 sm:[&_button]:!py-2 sm:[&_button]:!text-[0.68rem]">
                     <LogoutButton />
                   </div>
                 </div>
               </div>
 
-              <div className="mt-6 flex-1 max-w-lg">
+              <div className="mt-4 max-w-lg flex-1 sm:mt-6">
                 <p className="text-[0.68rem] font-semibold uppercase tracking-[0.3em] text-white/60">
                   留言
                 </p>
                 {loadError ? (
-                  <p className="mt-4 text-[0.98rem] leading-8 text-rose-100 sm:text-[1.02rem]">{loadError}</p>
+                  <p className="mt-3 text-[0.92rem] leading-6 text-rose-100 sm:mt-4 sm:text-[1.02rem] sm:leading-8">{loadError}</p>
                 ) : message ? (
                   <>
-                    <p className="mt-4 whitespace-pre-wrap text-[1rem] leading-8 text-white/92 sm:text-[1.05rem] sm:leading-9">
+                    <p className="mt-3 whitespace-pre-wrap text-[0.94rem] leading-6 text-white/92 sm:mt-4 sm:text-[1.05rem] sm:leading-9">
                       {message.content}
                     </p>
                   </>
                 ) : (
                   <>
-                    <p className="mt-4 text-[0.98rem] leading-8 text-white/78 sm:text-[1.02rem]">
+                    <p className="mt-3 text-[0.92rem] leading-6 text-white/78 sm:mt-4 sm:text-[1.02rem] sm:leading-8">
                       No message yet. Once your teammate writes your note, it will appear here automatically.
                     </p>
                   </>

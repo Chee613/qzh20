@@ -1560,7 +1560,7 @@ export default function Home() {
   }
 
   return (
-    <main className="min-h-screen bg-zinc-950 font-sans text-zinc-50 selection:bg-blue-500/30">
+    <main className="min-h-[var(--app-screen-height)] bg-zinc-950 font-sans text-zinc-50 selection:bg-blue-500/30">
       <div className="fixed inset-x-0 top-0 z-50">
         {/* Navigation (Framer Style) */}
         <nav className="flex w-full items-center justify-between border-b border-zinc-800/50 bg-zinc-950/70 px-3 py-3 backdrop-blur-xl sm:px-4 sm:py-4 md:px-8">
@@ -1668,10 +1668,10 @@ export default function Home() {
         id="qzh"
         data-nav-short="QZH"
         data-nav-label="全中华"
-        className="relative flex min-h-screen scroll-mt-24 flex-col items-center justify-center overflow-hidden px-4 pb-8 pt-24 sm:px-6 sm:pt-28 md:pb-0"
+        className="relative flex min-h-[calc(var(--app-screen-height)-var(--site-nav-height))] scroll-mt-24 flex-col items-center justify-start overflow-hidden px-4 pb-10 pt-28 sm:px-6 sm:pt-32 md:justify-center md:pb-0"
       >
-        <div className="absolute left-1/4 top-1/4 -z-10 h-[500px] w-[500px] rounded-full bg-blue-600/20 blur-[120px] mix-blend-screen" />
-        <div className="absolute bottom-1/4 right-1/4 -z-10 h-[400px] w-[400px] rounded-full bg-emerald-500/10 blur-[120px] mix-blend-screen" />
+        <div className="absolute left-1/4 top-1/4 -z-10 h-[320px] w-[320px] rounded-full bg-blue-600/20 blur-[120px] mix-blend-screen sm:h-[500px] sm:w-[500px]" />
+        <div className="absolute bottom-1/4 right-1/4 -z-10 h-[260px] w-[260px] rounded-full bg-emerald-500/10 blur-[120px] mix-blend-screen sm:h-[400px] sm:w-[400px]" />
 
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -1684,7 +1684,7 @@ export default function Home() {
               <Image src="/20th-logo.png" alt="20th Anniversary" fill className="object-contain drop-shadow-2xl" />
             </div>
           </div>
-          <div className="relative mx-auto w-fit">
+          <div className="relative mx-auto flex w-fit flex-col items-center">
             <div className="text-center">
               <h1 className="text-4xl font-black leading-[1.05] tracking-tighter sm:text-5xl md:text-8xl">
                 <span className="bg-gradient-to-r from-blue-400 to-emerald-300 bg-clip-text text-transparent">
@@ -1696,10 +1696,16 @@ export default function Home() {
                 自：橙子🍊 机长✈️
               </p>
             </div>
-            <div className="pointer-events-none absolute left-full top-0 ml-2 sm:ml-3 md:ml-4">
+            <div className="mt-4 flex justify-center md:hidden">
               <LoopingMascotVideo
                 src={heroLoopMascotSrc}
-                className="h-28 w-28 sm:h-36 sm:w-36 md:h-48 md:w-48"
+                className="h-24 w-24 sm:h-28 sm:w-28"
+              />
+            </div>
+            <div className="pointer-events-none absolute left-full top-1/2 ml-4 hidden -translate-y-1/2 md:block">
+              <LoopingMascotVideo
+                src={heroLoopMascotSrc}
+                className="h-36 w-36 lg:h-48 lg:w-48"
               />
             </div>
           </div>
@@ -1779,7 +1785,7 @@ export default function Home() {
                   activeMascotInteractionSrc ? "scale-105 blur-2xl" : "blur-3xl group-hover:blur-2xl"
                 }`}
               />
-              <div className="relative z-10 flex h-full w-full items-center justify-center overflow-hidden transition-transform duration-500 hover:-translate-y-4">
+              <div className="relative z-10 flex h-full w-full items-center justify-center overflow-visible transition-transform duration-500 hover:-translate-y-4">
                 <Image
                   src="/mascot.png"
                   alt="QZH20 Dinosaur Mascot"
@@ -1833,16 +1839,22 @@ export default function Home() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <div className="relative mx-auto mb-8 w-fit text-center sm:mb-10">
+            <div className="relative mx-auto mb-8 flex w-fit flex-col items-center text-center sm:mb-10">
               <div className="inline-block rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-xs font-semibold tracking-wider text-emerald-400 sm:text-sm">
                 感言:眼睛尿尿了
               </div>
               <p className="mt-1 text-base leading-relaxed text-zinc-400 sm:text-lg">阅读我这段真心的感受🥺</p>
               <p className="mt-1 text-base leading-relaxed text-zinc-400 sm:text-lg">有你，有我，有全中华！🥰</p>
-              <div className="pointer-events-none absolute left-full top-0 ml-2 sm:ml-3 md:ml-4">
+              <div className="mt-4 flex justify-center md:hidden">
                 <LoopingMascotVideo
                   src={messagesLoopMascotSrc}
-                  className="h-28 w-28 sm:h-36 sm:w-36 md:h-48 md:w-48"
+                  className="h-24 w-24 sm:h-28 sm:w-28"
+                />
+              </div>
+              <div className="pointer-events-none absolute left-full top-1/2 ml-4 hidden -translate-y-1/2 md:block">
+                <LoopingMascotVideo
+                  src={messagesLoopMascotSrc}
+                  className="h-36 w-36 lg:h-48 lg:w-48"
                 />
               </div>
             </div>
@@ -1862,21 +1874,27 @@ export default function Home() {
         id="login-section"
         data-nav-short="圈圈"
         data-nav-label="圈圈"
-        className="snap-free-section relative min-h-screen scroll-mt-24 border-t border-zinc-800/50 bg-zinc-950 px-4 py-20 sm:px-6 sm:py-24"
+        className="snap-free-section relative min-h-[var(--app-screen-height)] scroll-mt-24 border-t border-zinc-800/50 bg-zinc-950 px-4 py-20 sm:px-6 sm:py-24"
       >
         <div className="pointer-events-none absolute left-1/2 top-1/2 -z-10 h-[520px] w-full max-w-4xl -translate-x-1/2 -translate-y-1/2 rounded-full bg-blue-600/10 blur-[120px]" />
 
         <div className="mx-auto max-w-6xl">
           <div className="mb-12 text-center sm:mb-16">
-            <div className="relative mx-auto w-fit text-center">
+            <div className="relative mx-auto flex w-fit flex-col items-center text-center">
               <h2 className="text-3xl font-bold text-zinc-100 sm:text-4xl md:text-5xl">圈圈 ദ്ദി(˵ •̀ ᴗ - ˵ ) ✧</h2>
               <p className="mt-1 text-base text-zinc-400 sm:text-lg">
                 快找你们帅帅妹妹的头像吧！！！！  
               </p>
-              <div className="pointer-events-none absolute left-full top-0 ml-2 sm:ml-3 md:ml-4">
+              <div className="mt-4 flex justify-center md:hidden">
                 <LoopingMascotVideo
                   src={loginLoopMascotSrc}
-                  className="h-28 w-28 sm:h-36 sm:w-36 md:h-48 md:w-48"
+                  className="h-24 w-24 sm:h-28 sm:w-28"
+                />
+              </div>
+              <div className="pointer-events-none absolute left-full top-1/2 ml-4 hidden -translate-y-1/2 md:block">
+                <LoopingMascotVideo
+                  src={loginLoopMascotSrc}
+                  className="h-36 w-36 lg:h-48 lg:w-48"
                 />
               </div>
             </div>

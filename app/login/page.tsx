@@ -10,7 +10,7 @@ export default async function LoginPage() {
   }
 
   return (
-    <main className="relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-zinc-950 px-4 py-10 sm:px-6">
+    <main className="relative flex min-h-[var(--app-screen-height)] w-full items-center justify-center overflow-hidden bg-zinc-950 px-4 py-10 sm:px-6">
       <div className="absolute left-1/2 top-0 -z-10 h-[520px] w-[520px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-blue-500/20 blur-3xl sm:h-[760px] sm:w-[760px]" />
       <div className="absolute bottom-0 right-0 -z-10 h-[380px] w-[380px] translate-x-1/3 translate-y-1/3 rounded-full bg-emerald-400/20 blur-3xl sm:h-[560px] sm:w-[560px]" />
 

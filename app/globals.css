@@ -10,6 +10,8 @@ html {
   --foreground: #171717;
   --font-geist-sans: Arial, Helvetica, sans-serif;
   --font-geist-mono: "Courier New", monospace;
+  --app-screen-height: 100vh;
+  --site-nav-height: 4.75rem;
 }
 
 @theme inline {
@@ -26,14 +28,27 @@ html {
   }
 }
 
+@supports (height: 100svh) {
+  :root {
+    --app-screen-height: 100svh;
+  }
+}
+
+@supports (height: 100dvh) {
+  :root {
+    --app-screen-height: 100dvh;
+  }
+}
+
 body {
+  min-height: var(--app-screen-height);
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
 
 section {
-  min-height: 100vh;
+  min-height: var(--app-screen-height);
   scroll-snap-align: none;
   scroll-snap-stop: normal;
 }
@@ -225,4 +240,14 @@ section {
 .teleprompter-letter.active {
   opacity: 1;
   text-shadow: 0 0 12px rgba(255, 255, 255, 0.34);
+}
+
+@media (max-width: 767px) {
+  html {
+    scroll-snap-type: none;
+  }
+
+  section {
+    min-height: auto;
+  }
 }
