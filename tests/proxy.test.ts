@@ -24,7 +24,7 @@ describe("dashboard proxy protection", () => {
 
     expect(response.status).toBe(307);
     expect(response.headers.get("location")).toBe(
-      "http://localhost/login?next=%2Fdashboard"
+      "http://localhost/?next=%2Fdashboard#login-section"
     );
   });
 

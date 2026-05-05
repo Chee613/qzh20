@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { FormEvent, useState } from "react";
 
 type LoginFormProps = {
@@ -9,6 +9,7 @@ type LoginFormProps = {
 
 export function LoginForm({ prefilledLoginId }: LoginFormProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const [passkey, setPasskey] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -16,6 +17,11 @@ export function LoginForm({ prefilledLoginId }: LoginFormProps) {
   const [fallbackLoginId, setFallbackLoginId] = useState("");
 
   const activeLoginId = prefilledLoginId || fallbackLoginId;
+  const nextPath = searchParams.get("next");
+  const redirectTarget =
+    nextPath && nextPath.startsWith("/") && !nextPath.startsWith("//")
+      ? nextPath
+      : "/dashboard";
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -41,7 +47,7 @@ export function LoginForm({ prefilledLoginId }: LoginFormProps) {
         return;
       }
 
-      router.push("/dashboard");
+      router.push(redirectTarget);
       router.refresh();
     } catch (caughtError) {
       if (caughtError instanceof Error) {
@@ -88,6 +94,8 @@ export function LoginForm({ prefilledLoginId }: LoginFormProps) {
           autoCorrect="off"
           spellCheck={false}
           pattern="[0-9]{4}[A-Za-z]{4}"
+          minLength={8}
+          maxLength={8}
           required
           autoFocus
           value={passkey}
@@ -96,7 +104,7 @@ export function LoginForm({ prefilledLoginId }: LoginFormProps) {
           placeholder="MMDDcode"
         />
         <p className="text-center text-[0.68rem] text-zinc-500 sm:text-xs">
-          Format: birthday without year + your 4-letter secret code
+          Format: 4 birthday digits followed by your 4-letter secret code
         </p>
       </div>
 

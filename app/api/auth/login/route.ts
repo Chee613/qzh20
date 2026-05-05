@@ -26,13 +26,22 @@ export async function POST(request: NextRequest) {
 
   const parsed = loginBodySchema.safeParse(body);
   if (!parsed.success) {
+    const hasPasskeyIssue = parsed.error.issues.some(
+      (issue) => issue.path[0] === "passkey"
+    );
+
     logAuditEvent(
       "auth.login.invalid_format",
       { ip: requestIp },
       "warn"
     );
+
     return NextResponse.json(
-      { error: "Invalid credentials format." },
+      {
+        error: hasPasskeyIssue
+          ? "Passkey must use 4 digits followed by 4 letters."
+          : "Invalid credentials format.",
+      },
       { status: 400 }
     );
   }

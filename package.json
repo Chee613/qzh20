@@ -3,8 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "generate:assets": "node scripts/generate-asset-manifests.mjs",
+    "dev": "npm run generate:assets && next dev",
+    "build": "npm run generate:assets && next build",
     "start": "next start",
     "restart:app": "powershell -NoProfile -Command \"$p = Get-NetTCPConnection -LocalPort 3000 -State Listen -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess -Unique; if ($p) { $p | ForEach-Object { Stop-Process -Id $_ -Force } }\" && npm run build && npm start",
     "restart:dev": "powershell -NoProfile -Command \"$ports = 3000,3001; $p = Get-NetTCPConnection -State Listen -ErrorAction SilentlyContinue | Where-Object { $ports -contains $_.LocalPort } | Select-Object -ExpandProperty OwningProcess -Unique; if ($p) { $p | ForEach-Object { Stop-Process -Id $_ -Force } }\" && npm run dev",

@@ -1,0 +1,753 @@
+{
+  "mascotVideos": [
+    "/moscot-video/dreamina-2026-05-05-4838-%E5%8F%82%E8%80%83%E4%B8%8A%E4%BC%A0%E7%9A%84%E5%90%89%E7%A5%A5%E7%89%A9%E5%9B%BE%E7%89%87%EF%BC%8C%E4%BF%9D%E6%8C%81%E8%A7%92%E8%89%B2%E5%A4%96%E5%BD%A2%E4%B8%80%E8%87%B4%E3%80%82%E8%93%9D%E8%89%B2%E6%81%90%E9%BE%99%E5%AE%9D%E5%AE%9D%E5%B0%9D%E8%AF%95%E5%BE%80%E5%89%8D%E8%B5%B0%E4%B8%A4%E6%AD%A5%EF%BC%8C%E5%9B%A0%E4%B8%BA%E8%BA%AB%E4%BD%93%E5%9C%86%E5%9C%86....mp4",
+    "/moscot-video/dreamina-2026-05-05-6680-%E5%8F%82%E8%80%83%E4%B8%8A%E4%BC%A0%E7%9A%84%E5%90%89%E7%A5%A5%E7%89%A9%E5%9B%BE%E7%89%87%EF%BC%8C%E4%BF%9D%E6%8C%81%E8%A7%92%E8%89%B2%E8%AE%BE%E8%AE%A1%E4%B8%80%E8%87%B4%E3%80%82%E8%93%9D%E8%89%B2%E6%81%90%E9%BE%99%E5%AE%9D%E5%AE%9D%E6%8A%AC%E5%A4%B4%E7%9C%8B%E5%88%B0%E4%B8%80%E9%A2%97%E9%97%AA%E9%97%AA%E5%8F%91%E5%85%89%E7%9A%84%E5%B0%8F%E6%98%9F%E6%98%9F....mp4",
+    "/moscot-video/lv_0_20260504140457.mp4",
+    "/moscot-video/lv_0_20260504141435.mp4",
+    "/moscot-video/lv_0_20260504141457.mp4",
+    "/moscot-video/lv_0_20260504141526.mp4"
+  ],
+  "memories": {
+    "nanma-fenzhan": [
+      {
+        "id": "nanma-fenzhan-1",
+        "srcCandidates": [
+          "/memories/nanma-fenzhan/1.JPG"
+        ],
+        "alt": "Nanma Memories photo 1"
+      },
+      {
+        "id": "nanma-fenzhan-2",
+        "srcCandidates": [
+          "/memories/nanma-fenzhan/2.jpg"
+        ],
+        "alt": "Nanma Memories photo 2"
+      },
+      {
+        "id": "nanma-fenzhan-3",
+        "srcCandidates": [
+          "/memories/nanma-fenzhan/3.jpg"
+        ],
+        "alt": "Nanma Memories photo 3"
+      },
+      {
+        "id": "nanma-fenzhan-4",
+        "srcCandidates": [
+          "/memories/nanma-fenzhan/4.jpg"
+        ],
+        "alt": "Nanma Memories photo 4"
+      },
+      {
+        "id": "nanma-fenzhan-5",
+        "srcCandidates": [
+          "/memories/nanma-fenzhan/5.jpg"
+        ],
+        "alt": "Nanma Memories photo 5"
+      },
+      {
+        "id": "nanma-fenzhan-6",
+        "srcCandidates": [
+          "/memories/nanma-fenzhan/6.jpg"
+        ],
+        "alt": "Nanma Memories photo 6"
+      },
+      {
+        "id": "nanma-fenzhan-7",
+        "srcCandidates": [
+          "/memories/nanma-fenzhan/7.jpg"
+        ],
+        "alt": "Nanma Memories photo 7"
+      },
+      {
+        "id": "nanma-fenzhan-8",
+        "srcCandidates": [
+          "/memories/nanma-fenzhan/8.jpg"
+        ],
+        "alt": "Nanma Memories photo 8"
+      },
+      {
+        "id": "nanma-fenzhan-9",
+        "srcCandidates": [
+          "/memories/nanma-fenzhan/9.jpg"
+        ],
+        "alt": "Nanma Memories photo 9"
+      },
+      {
+        "id": "nanma-fenzhan-10",
+        "srcCandidates": [
+          "/memories/nanma-fenzhan/10.jpg"
+        ],
+        "alt": "Nanma Memories photo 10"
+      },
+      {
+        "id": "nanma-fenzhan-11",
+        "srcCandidates": [
+          "/memories/nanma-fenzhan/11.jpg"
+        ],
+        "alt": "Nanma Memories photo 11"
+      },
+      {
+        "id": "nanma-fenzhan-12",
+        "srcCandidates": [
+          "/memories/nanma-fenzhan/12.jpg"
+        ],
+        "alt": "Nanma Memories photo 12"
+      },
+      {
+        "id": "nanma-fenzhan-13",
+        "srcCandidates": [
+          "/memories/nanma-fenzhan/13.jpg"
+        ],
+        "alt": "Nanma Memories photo 13"
+      },
+      {
+        "id": "nanma-fenzhan-14",
+        "srcCandidates": [
+          "/memories/nanma-fenzhan/14.jpg"
+        ],
+        "alt": "Nanma Memories photo 14"
+      },
+      {
+        "id": "nanma-fenzhan-15",
+        "srcCandidates": [
+          "/memories/nanma-fenzhan/15.jpg"
+        ],
+        "alt": "Nanma Memories photo 15"
+      },
+      {
+        "id": "nanma-fenzhan-16",
+        "srcCandidates": [
+          "/memories/nanma-fenzhan/16.jpg"
+        ],
+        "alt": "Nanma Memories photo 16"
+      },
+      {
+        "id": "nanma-fenzhan-17",
+        "srcCandidates": [
+          "/memories/nanma-fenzhan/17.jpg"
+        ],
+        "alt": "Nanma Memories photo 17"
+      },
+      {
+        "id": "nanma-fenzhan-18",
+        "srcCandidates": [
+          "/memories/nanma-fenzhan/18.jpg"
+        ],
+        "alt": "Nanma Memories photo 18"
+      },
+      {
+        "id": "nanma-fenzhan-19",
+        "srcCandidates": [
+          "/memories/nanma-fenzhan/19.jpg"
+        ],
+        "alt": "Nanma Memories photo 19"
+      },
+      {
+        "id": "nanma-fenzhan-20",
+        "srcCandidates": [
+          "/memories/nanma-fenzhan/20.jpg"
+        ],
+        "alt": "Nanma Memories photo 20"
+      },
+      {
+        "id": "nanma-fenzhan-21",
+        "srcCandidates": [
+          "/memories/nanma-fenzhan/21.jpg"
+        ],
+        "alt": "Nanma Memories photo 21"
+      },
+      {
+        "id": "nanma-fenzhan-22",
+        "srcCandidates": [
+          "/memories/nanma-fenzhan/22.jpg"
+        ],
+        "alt": "Nanma Memories photo 22"
+      },
+      {
+        "id": "nanma-fenzhan-23",
+        "srcCandidates": [
+          "/memories/nanma-fenzhan/23.jpg"
+        ],
+        "alt": "Nanma Memories photo 23"
+      },
+      {
+        "id": "nanma-fenzhan-24",
+        "srcCandidates": [
+          "/memories/nanma-fenzhan/24.jpg"
+        ],
+        "alt": "Nanma Memories photo 24"
+      },
+      {
+        "id": "nanma-fenzhan-25",
+        "srcCandidates": [
+          "/memories/nanma-fenzhan/25.jpg"
+        ],
+        "alt": "Nanma Memories photo 25"
+      },
+      {
+        "id": "nanma-fenzhan-26",
+        "srcCandidates": [
+          "/memories/nanma-fenzhan/26.jpg"
+        ],
+        "alt": "Nanma Memories photo 26"
+      },
+      {
+        "id": "nanma-fenzhan-27",
+        "srcCandidates": [
+          "/memories/nanma-fenzhan/27.jpg"
+        ],
+        "alt": "Nanma Memories photo 27"
+      },
+      {
+        "id": "nanma-fenzhan-28",
+        "srcCandidates": [
+          "/memories/nanma-fenzhan/28.jpg"
+        ],
+        "alt": "Nanma Memories photo 28"
+      },
+      {
+        "id": "nanma-fenzhan-29",
+        "srcCandidates": [
+          "/memories/nanma-fenzhan/29.jpg"
+        ],
+        "alt": "Nanma Memories photo 29"
+      },
+      {
+        "id": "nanma-fenzhan-30",
+        "srcCandidates": [
+          "/memories/nanma-fenzhan/30.jpg"
+        ],
+        "alt": "Nanma Memories photo 30"
+      },
+      {
+        "id": "nanma-fenzhan-31",
+        "srcCandidates": [
+          "/memories/nanma-fenzhan/31.jpg"
+        ],
+        "alt": "Nanma Memories photo 31"
+      },
+      {
+        "id": "nanma-fenzhan-32",
+        "srcCandidates": [
+          "/memories/nanma-fenzhan/32.jpg"
+        ],
+        "alt": "Nanma Memories photo 32"
+      },
+      {
+        "id": "nanma-fenzhan-33",
+        "srcCandidates": [
+          "/memories/nanma-fenzhan/33.jpg"
+        ],
+        "alt": "Nanma Memories photo 33"
+      },
+      {
+        "id": "nanma-fenzhan-34",
+        "srcCandidates": [
+          "/memories/nanma-fenzhan/34.jpg"
+        ],
+        "alt": "Nanma Memories photo 34"
+      },
+      {
+        "id": "nanma-fenzhan-35",
+        "srcCandidates": [
+          "/memories/nanma-fenzhan/35.jpg"
+        ],
+        "alt": "Nanma Memories photo 35"
+      },
+      {
+        "id": "nanma-fenzhan-36",
+        "srcCandidates": [
+          "/memories/nanma-fenzhan/36.jpg"
+        ],
+        "alt": "Nanma Memories photo 36"
+      },
+      {
+        "id": "nanma-fenzhan-37",
+        "srcCandidates": [
+          "/memories/nanma-fenzhan/37.jpg"
+        ],
+        "alt": "Nanma Memories photo 37"
+      },
+      {
+        "id": "nanma-fenzhan-38",
+        "srcCandidates": [
+          "/memories/nanma-fenzhan/38.jpg"
+        ],
+        "alt": "Nanma Memories photo 38"
+      },
+      {
+        "id": "nanma-fenzhan-39",
+        "srcCandidates": [
+          "/memories/nanma-fenzhan/39.jpg"
+        ],
+        "alt": "Nanma Memories photo 39"
+      },
+      {
+        "id": "nanma-fenzhan-40",
+        "srcCandidates": [
+          "/memories/nanma-fenzhan/40.jpg"
+        ],
+        "alt": "Nanma Memories photo 40"
+      },
+      {
+        "id": "nanma-fenzhan-41",
+        "srcCandidates": [
+          "/memories/nanma-fenzhan/41.jpg"
+        ],
+        "alt": "Nanma Memories photo 41"
+      },
+      {
+        "id": "nanma-fenzhan-42",
+        "srcCandidates": [
+          "/memories/nanma-fenzhan/42.jpg"
+        ],
+        "alt": "Nanma Memories photo 42"
+      },
+      {
+        "id": "nanma-fenzhan-43",
+        "srcCandidates": [
+          "/memories/nanma-fenzhan/43.jpg"
+        ],
+        "alt": "Nanma Memories photo 43"
+      },
+      {
+        "id": "nanma-fenzhan-44",
+        "srcCandidates": [
+          "/memories/nanma-fenzhan/44.jpg"
+        ],
+        "alt": "Nanma Memories photo 44"
+      },
+      {
+        "id": "nanma-fenzhan-45",
+        "srcCandidates": [
+          "/memories/nanma-fenzhan/45.jpg"
+        ],
+        "alt": "Nanma Memories photo 45"
+      },
+      {
+        "id": "nanma-fenzhan-46",
+        "srcCandidates": [
+          "/memories/nanma-fenzhan/46.jpg"
+        ],
+        "alt": "Nanma Memories photo 46"
+      },
+      {
+        "id": "nanma-fenzhan-47",
+        "srcCandidates": [
+          "/memories/nanma-fenzhan/47.jpg"
+        ],
+        "alt": "Nanma Memories photo 47"
+      }
+    ],
+    "beima-fenzhan": [
+      {
+        "id": "beima-fenzhan-1",
+        "srcCandidates": [
+          "/memories/beima-fenzhan/1.jpg"
+        ],
+        "alt": "Beima Memories photo 1"
+      },
+      {
+        "id": "beima-fenzhan-2",
+        "srcCandidates": [
+          "/memories/beima-fenzhan/2.jpg"
+        ],
+        "alt": "Beima Memories photo 2"
+      },
+      {
+        "id": "beima-fenzhan-3",
+        "srcCandidates": [
+          "/memories/beima-fenzhan/3.jpg"
+        ],
+        "alt": "Beima Memories photo 3"
+      },
+      {
+        "id": "beima-fenzhan-4",
+        "srcCandidates": [
+          "/memories/beima-fenzhan/4.jpg"
+        ],
+        "alt": "Beima Memories photo 4"
+      },
+      {
+        "id": "beima-fenzhan-5",
+        "srcCandidates": [
+          "/memories/beima-fenzhan/5.jpg"
+        ],
+        "alt": "Beima Memories photo 5"
+      },
+      {
+        "id": "beima-fenzhan-6",
+        "srcCandidates": [
+          "/memories/beima-fenzhan/6.jpg"
+        ],
+        "alt": "Beima Memories photo 6"
+      },
+      {
+        "id": "beima-fenzhan-7",
+        "srcCandidates": [
+          "/memories/beima-fenzhan/7.jpg"
+        ],
+        "alt": "Beima Memories photo 7"
+      },
+      {
+        "id": "beima-fenzhan-8",
+        "srcCandidates": [
+          "/memories/beima-fenzhan/8.jpg"
+        ],
+        "alt": "Beima Memories photo 8"
+      },
+      {
+        "id": "beima-fenzhan-9",
+        "srcCandidates": [
+          "/memories/beima-fenzhan/9.jpg"
+        ],
+        "alt": "Beima Memories photo 9"
+      },
+      {
+        "id": "beima-fenzhan-10",
+        "srcCandidates": [
+          "/memories/beima-fenzhan/10.jpg"
+        ],
+        "alt": "Beima Memories photo 10"
+      },
+      {
+        "id": "beima-fenzhan-11",
+        "srcCandidates": [
+          "/memories/beima-fenzhan/11.jpg"
+        ],
+        "alt": "Beima Memories photo 11"
+      },
+      {
+        "id": "beima-fenzhan-12",
+        "srcCandidates": [
+          "/memories/beima-fenzhan/12.jpg"
+        ],
+        "alt": "Beima Memories photo 12"
+      },
+      {
+        "id": "beima-fenzhan-13",
+        "srcCandidates": [
+          "/memories/beima-fenzhan/13.jpg"
+        ],
+        "alt": "Beima Memories photo 13"
+      },
+      {
+        "id": "beima-fenzhan-14",
+        "srcCandidates": [
+          "/memories/beima-fenzhan/14.jpg"
+        ],
+        "alt": "Beima Memories photo 14"
+      },
+      {
+        "id": "beima-fenzhan-15",
+        "srcCandidates": [
+          "/memories/beima-fenzhan/15.jpg"
+        ],
+        "alt": "Beima Memories photo 15"
+      },
+      {
+        "id": "beima-fenzhan-16",
+        "srcCandidates": [
+          "/memories/beima-fenzhan/16.jpg"
+        ],
+        "alt": "Beima Memories photo 16"
+      },
+      {
+        "id": "beima-fenzhan-17",
+        "srcCandidates": [
+          "/memories/beima-fenzhan/17.jpg"
+        ],
+        "alt": "Beima Memories photo 17"
+      },
+      {
+        "id": "beima-fenzhan-18",
+        "srcCandidates": [
+          "/memories/beima-fenzhan/18.jpg"
+        ],
+        "alt": "Beima Memories photo 18"
+      },
+      {
+        "id": "beima-fenzhan-19",
+        "srcCandidates": [
+          "/memories/beima-fenzhan/19.jpg"
+        ],
+        "alt": "Beima Memories photo 19"
+      },
+      {
+        "id": "beima-fenzhan-20",
+        "srcCandidates": [
+          "/memories/beima-fenzhan/20.jpg"
+        ],
+        "alt": "Beima Memories photo 20"
+      },
+      {
+        "id": "beima-fenzhan-21",
+        "srcCandidates": [
+          "/memories/beima-fenzhan/21.jpg"
+        ],
+        "alt": "Beima Memories photo 21"
+      },
+      {
+        "id": "beima-fenzhan-22",
+        "srcCandidates": [
+          "/memories/beima-fenzhan/22.jpg"
+        ],
+        "alt": "Beima Memories photo 22"
+      },
+      {
+        "id": "beima-fenzhan-23",
+        "srcCandidates": [
+          "/memories/beima-fenzhan/23.jpg"
+        ],
+        "alt": "Beima Memories photo 23"
+      },
+      {
+        "id": "beima-fenzhan-24",
+        "srcCandidates": [
+          "/memories/beima-fenzhan/24.jpg"
+        ],
+        "alt": "Beima Memories photo 24"
+      }
+    ],
+    "zongzhan": [
+      {
+        "id": "zongzhan-1",
+        "srcCandidates": [
+          "/memories/zongzhan/1.jpg"
+        ],
+        "alt": "Zongzhan Memories photo 1"
+      },
+      {
+        "id": "zongzhan-2",
+        "srcCandidates": [
+          "/memories/zongzhan/2.jpg"
+        ],
+        "alt": "Zongzhan Memories photo 2"
+      },
+      {
+        "id": "zongzhan-3",
+        "srcCandidates": [
+          "/memories/zongzhan/3.jpg"
+        ],
+        "alt": "Zongzhan Memories photo 3"
+      },
+      {
+        "id": "zongzhan-4",
+        "srcCandidates": [
+          "/memories/zongzhan/4.jpg"
+        ],
+        "alt": "Zongzhan Memories photo 4"
+      },
+      {
+        "id": "zongzhan-5",
+        "srcCandidates": [
+          "/memories/zongzhan/5.jpg"
+        ],
+        "alt": "Zongzhan Memories photo 5"
+      },
+      {
+        "id": "zongzhan-6",
+        "srcCandidates": [
+          "/memories/zongzhan/6.jpg"
+        ],
+        "alt": "Zongzhan Memories photo 6"
+      },
+      {
+        "id": "zongzhan-7",
+        "srcCandidates": [
+          "/memories/zongzhan/7.jpg"
+        ],
+        "alt": "Zongzhan Memories photo 7"
+      },
+      {
+        "id": "zongzhan-8",
+        "srcCandidates": [
+          "/memories/zongzhan/8.jpg"
+        ],
+        "alt": "Zongzhan Memories photo 8"
+      },
+      {
+        "id": "zongzhan-9",
+        "srcCandidates": [
+          "/memories/zongzhan/9.jpg"
+        ],
+        "alt": "Zongzhan Memories photo 9"
+      },
+      {
+        "id": "zongzhan-10",
+        "srcCandidates": [
+          "/memories/zongzhan/10.jpg"
+        ],
+        "alt": "Zongzhan Memories photo 10"
+      },
+      {
+        "id": "zongzhan-11",
+        "srcCandidates": [
+          "/memories/zongzhan/11.jpg"
+        ],
+        "alt": "Zongzhan Memories photo 11"
+      },
+      {
+        "id": "zongzhan-12",
+        "srcCandidates": [
+          "/memories/zongzhan/12.jpg"
+        ],
+        "alt": "Zongzhan Memories photo 12"
+      },
+      {
+        "id": "zongzhan-13",
+        "srcCandidates": [
+          "/memories/zongzhan/13.jpg"
+        ],
+        "alt": "Zongzhan Memories photo 13"
+      },
+      {
+        "id": "zongzhan-14",
+        "srcCandidates": [
+          "/memories/zongzhan/14.jpg"
+        ],
+        "alt": "Zongzhan Memories photo 14"
+      },
+      {
+        "id": "zongzhan-15",
+        "srcCandidates": [
+          "/memories/zongzhan/15.jpg"
+        ],
+        "alt": "Zongzhan Memories photo 15"
+      },
+      {
+        "id": "zongzhan-16",
+        "srcCandidates": [
+          "/memories/zongzhan/16.jpg"
+        ],
+        "alt": "Zongzhan Memories photo 16"
+      },
+      {
+        "id": "zongzhan-17",
+        "srcCandidates": [
+          "/memories/zongzhan/17.jpg"
+        ],
+        "alt": "Zongzhan Memories photo 17"
+      },
+      {
+        "id": "zongzhan-18",
+        "srcCandidates": [
+          "/memories/zongzhan/18.jpg"
+        ],
+        "alt": "Zongzhan Memories photo 18"
+      },
+      {
+        "id": "zongzhan-19",
+        "srcCandidates": [
+          "/memories/zongzhan/19.jpg"
+        ],
+        "alt": "Zongzhan Memories photo 19"
+      },
+      {
+        "id": "zongzhan-20",
+        "srcCandidates": [
+          "/memories/zongzhan/20.jpg"
+        ],
+        "alt": "Zongzhan Memories photo 20"
+      },
+      {
+        "id": "zongzhan-21",
+        "srcCandidates": [
+          "/memories/zongzhan/21.jpg"
+        ],
+        "alt": "Zongzhan Memories photo 21"
+      },
+      {
+        "id": "zongzhan-22",
+        "srcCandidates": [
+          "/memories/zongzhan/22.jpg"
+        ],
+        "alt": "Zongzhan Memories photo 22"
+      },
+      {
+        "id": "zongzhan-23",
+        "srcCandidates": [
+          "/memories/zongzhan/23.jpg"
+        ],
+        "alt": "Zongzhan Memories photo 23"
+      },
+      {
+        "id": "zongzhan-24",
+        "srcCandidates": [
+          "/memories/zongzhan/24.jpg"
+        ],
+        "alt": "Zongzhan Memories photo 24"
+      },
+      {
+        "id": "zongzhan-25",
+        "srcCandidates": [
+          "/memories/zongzhan/25.jpg"
+        ],
+        "alt": "Zongzhan Memories photo 25"
+      },
+      {
+        "id": "zongzhan-26",
+        "srcCandidates": [
+          "/memories/zongzhan/26.jpg"
+        ],
+        "alt": "Zongzhan Memories photo 26"
+      },
+      {
+        "id": "zongzhan-27",
+        "srcCandidates": [
+          "/memories/zongzhan/27.jpg"
+        ],
+        "alt": "Zongzhan Memories photo 27"
+      },
+      {
+        "id": "zongzhan-28",
+        "srcCandidates": [
+          "/memories/zongzhan/28.jpg"
+        ],
+        "alt": "Zongzhan Memories photo 28"
+      },
+      {
+        "id": "zongzhan-29",
+        "srcCandidates": [
+          "/memories/zongzhan/29.jpg"
+        ],
+        "alt": "Zongzhan Memories photo 29"
+      },
+      {
+        "id": "zongzhan-30",
+        "srcCandidates": [
+          "/memories/zongzhan/30.jpg"
+        ],
+        "alt": "Zongzhan Memories photo 30"
+      },
+      {
+        "id": "zongzhan-31",
+        "srcCandidates": [
+          "/memories/zongzhan/31.jpg"
+        ],
+        "alt": "Zongzhan Memories photo 31"
+      },
+      {
+        "id": "zongzhan-32",
+        "srcCandidates": [
+          "/memories/zongzhan/32.jpg"
+        ],
+        "alt": "Zongzhan Memories photo 32"
+      },
+      {
+        "id": "zongzhan-33",
+        "srcCandidates": [
+          "/memories/zongzhan/33.jpg"
+        ],
+        "alt": "Zongzhan Memories photo 33"
+      },
+      {
+        "id": "zongzhan-35",
+        "srcCandidates": [
+          "/memories/zongzhan/35.jpg"
+        ],
+        "alt": "Zongzhan Memories photo 35"
+      }
+    ]
+  }
+}
