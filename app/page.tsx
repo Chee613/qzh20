@@ -6,8 +6,8 @@ import { useEffect, useEffectEvent, useRef, useState } from "react";
 
 import { TransparentMascotVideo } from "@/components/transparent-mascot-video";
 import { SlideController } from "@/lib/SlideController";
+import { getMascotVideoManifest, getMemoryManifest } from "@/lib/asset-manifests";
 import {
-  createEmptyMemoryManifest,
   MEMORY_GALLERY_CONFIGS,
   type MemoryGalleryItem,
   type MemoryManifestResponse,
@@ -119,10 +119,6 @@ const MASCOT_INTERACTION_MAX_DELAY_MS = 22_000;
 const memoryResolvedCandidateIndexCache = new Map<string, number>();
 const memoryPreloadPromiseCache = new Map<string, Promise<number | null>>();
 
-type MascotVideoManifestResponse = {
-  videos: string[];
-};
-
 type IdleWindow = Window & {
   requestIdleCallback?: (callback: () => void, options?: { timeout: number }) => number;
   cancelIdleCallback?: (handle: number) => void;
@@ -136,6 +132,24 @@ function buildMemoryGalleries(
     slides: galleriesByFolder[gallery.folder] ?? [],
   }));
 }
+
+function getInitialMemoryPreviewIndexes(galleriesByFolder: MemoryManifestResponse["galleries"]) {
+  const initialGallery = MEMORY_GALLERY_CONFIGS[0];
+  const initialSlides = initialGallery ? galleriesByFolder[initialGallery.folder] ?? [] : [];
+  const initialSlideCount = initialSlides.length;
+
+  if (initialSlideCount <= 0) {
+    return Array.from({ length: MEMORY_PREVIEW_SLOT_COUNT }, () => 0);
+  }
+
+  return Array.from(
+    { length: MEMORY_PREVIEW_SLOT_COUNT },
+    (_, index) => index % initialSlideCount,
+  );
+}
+
+const STATIC_MEMORY_MANIFEST = getMemoryManifest();
+const STATIC_MASCOT_INTERACTION_VIDEOS = [...getMascotVideoManifest()];
 
 function createPlaceholderMemorySlide(title: string, slotIndex: number): MemorySlide {
   return {
@@ -453,20 +467,6 @@ function pickRandomPoolIndexes(
   return picks;
 }
 
-function pickRandomSlideIndexes(
-  total: number,
-  count: number,
-  previous: readonly number[] = [],
-  recentHistory: readonly number[] = [],
-) {
-  return pickRandomPoolIndexes(
-    Array.from({ length: total }, (_, index) => index),
-    count,
-    previous,
-    recentHistory,
-  );
-}
-
 function pickRandomDelay(min: number, max: number) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
@@ -695,6 +695,9 @@ function LoopingMascotVideo({
         src={src}
         className="h-full w-full"
         canvasClassName={videoClassName}
+        preload="none"
+        maxFps={10}
+        processingScale={0.55}
       />
     </motion.div>
   );
@@ -703,15 +706,19 @@ function LoopingMascotVideo({
 export default function Home() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null);
-  const [memorySlidesByFolder, setMemorySlidesByFolder] = useState(createEmptyMemoryManifest);
-  const [mascotInteractionVideos, setMascotInteractionVideos] = useState<string[]>([]);
+  const memorySlidesByFolder = STATIC_MEMORY_MANIFEST;
+  const mascotInteractionVideos = STATIC_MASCOT_INTERACTION_VIDEOS;
   const memoryGalleries = buildMemoryGalleries(memorySlidesByFolder);
-  const memoryRecentHistoryRef = useRef<number[][]>(MEMORY_GALLERY_CONFIGS.map(() => []));
+  const memoryRecentHistoryRef = useRef<number[][]>(
+    MEMORY_GALLERY_CONFIGS.map((_gallery, galleryIndex) =>
+      galleryIndex === 0 ? getInitialMemoryPreviewIndexes(STATIC_MEMORY_MANIFEST) : [],
+    ),
+  );
 
   const [activeSection, setActiveSection] = useState<SectionHref>("#qzh");
   const [activeMemoryIndex, setActiveMemoryIndex] = useState(0);
   const [memoryPreviewIndexes, setMemoryPreviewIndexes] = useState<number[]>(() =>
-    pickRandomSlideIndexes(0, MEMORY_PREVIEW_SLOT_COUNT),
+    getInitialMemoryPreviewIndexes(STATIC_MEMORY_MANIFEST),
   );
   const [isMemoriesPrimed, setIsMemoriesPrimed] = useState(false);
   const [isMemoriesVisible, setIsMemoriesVisible] = useState(false);
@@ -943,74 +950,6 @@ export default function Home() {
 
     return () => {
       observer.disconnect();
-    };
-  }, []);
-
-  useEffect(() => {
-    let isMounted = true;
-
-    async function loadMemoryManifest() {
-      try {
-        const response = await fetch("/api/memories", { cache: "no-store" });
-
-        if (!response.ok) {
-          return;
-        }
-
-        const data: MemoryManifestResponse = await response.json();
-
-        if (!isMounted) {
-          return;
-        }
-
-        setMemorySlidesByFolder(data.galleries);
-
-        const initialGallery = MEMORY_GALLERY_CONFIGS[0];
-        const initialSlideCount = initialGallery ? data.galleries[initialGallery.folder].length : 0;
-        const initialIndexes = pickRandomSlideIndexes(initialSlideCount, MEMORY_PREVIEW_SLOT_COUNT);
-
-        memoryRecentHistoryRef.current = MEMORY_GALLERY_CONFIGS.map(() => []);
-        memoryRecentHistoryRef.current[0] = initialIndexes.slice(-MEMORY_PREVIEW_HISTORY_LIMIT);
-        setMemoryPreviewIndexes(initialIndexes);
-      } catch {
-        // Keep the placeholder state when the manifest cannot be loaded.
-      }
-    }
-
-    void loadMemoryManifest();
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-
-  useEffect(() => {
-    let isMounted = true;
-
-    async function loadMascotVideos() {
-      try {
-        const response = await fetch("/api/mascot-videos", { cache: "no-store" });
-
-        if (!response.ok) {
-          return;
-        }
-
-        const data: MascotVideoManifestResponse = await response.json();
-
-        if (!isMounted) {
-          return;
-        }
-
-        setMascotInteractionVideos(data.videos);
-      } catch {
-        // Keep the mascot as a static image when the videos cannot be loaded.
-      }
-    }
-
-    void loadMascotVideos();
-
-    return () => {
-      isMounted = false;
     };
   }, []);
 
@@ -1493,18 +1432,18 @@ export default function Home() {
     applyTeleprompterState(initialProgress);
     syncTeleprompterCompletion(initialProgress);
 
-    window.addEventListener("wheel", handleWheel, { passive: false });
-    window.addEventListener("touchstart", handleTouchStart, { passive: true });
-    window.addEventListener("touchmove", handleTouchMove, { passive: false });
-    window.addEventListener("touchend", handleTouchEnd);
+    messagesSection.addEventListener("wheel", handleWheel, { passive: false });
+    messagesSection.addEventListener("touchstart", handleTouchStart, { passive: true });
+    messagesSection.addEventListener("touchmove", handleTouchMove, { passive: false });
+    messagesSection.addEventListener("touchend", handleTouchEnd);
     window.addEventListener("keydown", handleKeyDown);
     window.addEventListener("resize", handleResize);
 
     return () => {
-      window.removeEventListener("wheel", handleWheel);
-      window.removeEventListener("touchstart", handleTouchStart);
-      window.removeEventListener("touchmove", handleTouchMove);
-      window.removeEventListener("touchend", handleTouchEnd);
+      messagesSection.removeEventListener("wheel", handleWheel);
+      messagesSection.removeEventListener("touchstart", handleTouchStart);
+      messagesSection.removeEventListener("touchmove", handleTouchMove);
+      messagesSection.removeEventListener("touchend", handleTouchEnd);
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("resize", handleResize);
     };
@@ -1807,6 +1746,9 @@ export default function Home() {
                       <TransparentMascotVideo
                         src={activeMascotInteractionSrc}
                         loop={false}
+                        preload="metadata"
+                        maxFps={16}
+                        processingScale={0.72}
                         onEnded={() => {
                           setActiveMascotInteractionSrc(null);
                         }}

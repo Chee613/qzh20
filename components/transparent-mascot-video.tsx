@@ -1,12 +1,16 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type TransparentMascotVideoProps = {
   src: string;
   className?: string;
   canvasClassName?: string;
   loop?: boolean;
+  preload?: "auto" | "metadata" | "none";
+  maxFps?: number;
+  processingScale?: number;
+  visibilityMargin?: string;
   onEnded?: () => void;
   onError?: () => void;
 };
@@ -187,11 +191,64 @@ export function TransparentMascotVideo({
   className = "",
   canvasClassName = "",
   loop = true,
+  preload = "metadata",
+  maxFps = 14,
+  processingScale = 0.7,
+  visibilityMargin = "180px",
   onEnded,
   onError,
 }: TransparentMascotVideoProps) {
+  const containerRef = useRef<HTMLDivElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  const [isInViewport, setIsInViewport] = useState(
+    () => typeof window !== "undefined" && typeof IntersectionObserver === "undefined",
+  );
+  const [isPageVisible, setIsPageVisible] = useState(() =>
+    typeof document === "undefined" ? true : document.visibilityState === "visible",
+  );
+
+  useEffect(() => {
+    if (typeof document === "undefined") {
+      return;
+    }
+
+    const handleVisibilityChange = () => {
+      setIsPageVisible(document.visibilityState === "visible");
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, []);
+
+  useEffect(() => {
+    const container = containerRef.current;
+
+    if (!container || typeof IntersectionObserver === "undefined") {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        setIsInViewport(entry?.isIntersecting ?? false);
+      },
+      {
+        root: null,
+        rootMargin: visibilityMargin,
+        threshold: 0.01,
+      },
+    );
+
+    observer.observe(container);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [visibilityMargin]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -202,21 +259,53 @@ export function TransparentMascotVideo({
       return;
     }
 
+    const shouldAnimate = isInViewport && isPageVisible;
+    const safeProcessingScale = Math.min(Math.max(processingScale, 0.35), 1);
+    const frameIntervalMs = maxFps > 0 ? 1000 / maxFps : 0;
+
     let isCancelled = false;
     let animationFrameId: number | null = null;
+    let lastRenderedAt = 0;
 
-    const drawFrame = () => {
+    const stopDrawing = () => {
+      if (animationFrameId !== null) {
+        window.cancelAnimationFrame(animationFrameId);
+        animationFrameId = null;
+      }
+    };
+
+    const pauseVideo = () => {
+      if (!video.paused) {
+        video.pause();
+      }
+    };
+
+    const drawFrame = (timestamp: number) => {
       if (isCancelled) {
         return;
       }
 
-      const width = video.videoWidth;
-      const height = video.videoHeight;
+      if (!shouldAnimate) {
+        pauseVideo();
+        stopDrawing();
+        return;
+      }
 
-      if (!width || !height) {
+      if (frameIntervalMs > 0 && timestamp - lastRenderedAt < frameIntervalMs) {
         animationFrameId = window.requestAnimationFrame(drawFrame);
         return;
       }
+
+      const sourceWidth = video.videoWidth;
+      const sourceHeight = video.videoHeight;
+
+      if (!sourceWidth || !sourceHeight) {
+        animationFrameId = window.requestAnimationFrame(drawFrame);
+        return;
+      }
+
+      const width = Math.max(1, Math.round(sourceWidth * safeProcessingScale));
+      const height = Math.max(1, Math.round(sourceHeight * safeProcessingScale));
 
       if (canvas.width !== width || canvas.height !== height) {
         canvas.width = width;
@@ -283,11 +372,12 @@ export function TransparentMascotVideo({
       }
 
       context.putImageData(frame, 0, 0);
+      lastRenderedAt = timestamp;
       animationFrameId = window.requestAnimationFrame(drawFrame);
     };
 
     const startDrawing = () => {
-      if (isCancelled) {
+      if (isCancelled || !shouldAnimate) {
         return;
       }
 
@@ -300,24 +390,29 @@ export function TransparentMascotVideo({
       }
     };
 
-    startDrawing();
+    if (shouldAnimate) {
+      startDrawing();
+    } else {
+      pauseVideo();
+      stopDrawing();
+    }
+
     video.addEventListener("loadeddata", startDrawing);
     video.addEventListener("play", startDrawing);
 
     return () => {
       isCancelled = true;
 
-      if (animationFrameId !== null) {
-        window.cancelAnimationFrame(animationFrameId);
-      }
+      pauseVideo();
+      stopDrawing();
 
       video.removeEventListener("loadeddata", startDrawing);
       video.removeEventListener("play", startDrawing);
     };
-  }, [src]);
+  }, [src, isInViewport, isPageVisible, maxFps, processingScale]);
 
   return (
-    <div className={`relative ${className}`}>
+    <div ref={containerRef} className={`relative ${className}`}>
       <canvas
         ref={canvasRef}
         aria-hidden="true"
@@ -331,7 +426,7 @@ export function TransparentMascotVideo({
         loop={loop}
         muted
         playsInline
-        preload="auto"
+        preload={preload}
         aria-hidden="true"
         onEnded={onEnded}
         onError={onError}

@@ -62,7 +62,7 @@ export function DashboardBackgroundMedia({
             loop
             muted={isMuted}
             playsInline
-            preload="auto"
+            preload="metadata"
           >
             <source src={`/dashboard-backgrounds/${loginId}.webm`} type="video/webm" />
             <source src={`/dashboard-backgrounds/${loginId}.mp4`} type="video/mp4" />
