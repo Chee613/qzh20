@@ -676,7 +676,7 @@ export function HomeMemoriesSection({
 
     const timer = window.setInterval(() => {
       rotateMemoryPreview();
-    }, 2000);
+    }, 5000);
 
     return () => {
       window.clearInterval(timer);

@@ -25,7 +25,11 @@ export function HomeMessagesSection({
   const teleprompterViewportRef = useRef<HTMLDivElement | null>(null);
   const teleprompterTextRef = useRef<HTMLDivElement | null>(null);
   const teleprompterProgressRef = useRef(0);
+  const teleprompterPendingProgressRef = useRef<number | null>(null);
+  const teleprompterProgressFrameIdRef = useRef<number | null>(null);
   const teleprompterTouchStartYRef = useRef<number | null>(null);
+  const teleprompterTouchStartXRef = useRef<number | null>(null);
+  const teleprompterTouchTrackActiveRef = useRef(false);
   const reportCompletion = useEffectEvent((isComplete: boolean) => {
     onCompletionChange?.(isComplete);
   });
@@ -281,6 +285,44 @@ export function HomeMessagesSection({
       reportCompletion(isComplete);
     };
 
+    const flushPendingTeleprompterProgress = () => {
+      teleprompterProgressFrameIdRef.current = null;
+      const pendingProgress = teleprompterPendingProgressRef.current;
+
+      if (pendingProgress === null) {
+        return;
+      }
+
+      teleprompterPendingProgressRef.current = null;
+      teleprompterProgressRef.current = pendingProgress;
+      applyTeleprompterState(pendingProgress);
+      syncTeleprompterCompletion(pendingProgress);
+    };
+
+    const commitTeleprompterProgress = (progress: number) => {
+      if (teleprompterProgressFrameIdRef.current !== null) {
+        window.cancelAnimationFrame(teleprompterProgressFrameIdRef.current);
+        teleprompterProgressFrameIdRef.current = null;
+      }
+
+      teleprompterPendingProgressRef.current = null;
+      teleprompterProgressRef.current = progress;
+      applyTeleprompterState(progress);
+      syncTeleprompterCompletion(progress);
+    };
+
+    const scheduleTeleprompterProgress = (progress: number) => {
+      teleprompterPendingProgressRef.current = progress;
+
+      if (teleprompterProgressFrameIdRef.current !== null) {
+        return;
+      }
+
+      teleprompterProgressFrameIdRef.current = window.requestAnimationFrame(
+        flushPendingTeleprompterProgress,
+      );
+    };
+
     const updateProgressByDelta = (deltaY: number, source: ProgressInputSource) => {
       const mobile = isMobileViewport();
       const sourceAdjustedDelta =
@@ -301,9 +343,12 @@ export function HomeMessagesSection({
         return;
       }
 
-      teleprompterProgressRef.current = next;
-      applyTeleprompterState(next);
-      syncTeleprompterCompletion(next);
+      if (source === "touch" && mobile) {
+        scheduleTeleprompterProgress(next);
+        return;
+      }
+
+      commitTeleprompterProgress(next);
     };
 
     const handleWheel = (event: WheelEvent) => {
@@ -322,35 +367,53 @@ export function HomeMessagesSection({
     };
 
     const handleTouchStart = (event: TouchEvent) => {
-      teleprompterTouchStartYRef.current = event.touches[0]?.clientY ?? null;
+      const trackTarget = event.target;
+      const touch = event.touches[0];
+      const isTouchOnTrack =
+        trackTarget instanceof Node && track.contains(trackTarget) && isInLockZone();
+
+      teleprompterTouchTrackActiveRef.current = isTouchOnTrack;
+      teleprompterTouchStartYRef.current = isTouchOnTrack ? touch?.clientY ?? null : null;
+      teleprompterTouchStartXRef.current = isTouchOnTrack ? touch?.clientX ?? null : null;
     };
 
     const handleTouchMove = (event: TouchEvent) => {
-      if (!isInLockZone()) {
+      if (!teleprompterTouchTrackActiveRef.current || !isInLockZone()) {
         return;
       }
 
       const startY = teleprompterTouchStartYRef.current;
+      const startX = teleprompterTouchStartXRef.current;
       const currentY = event.touches[0]?.clientY;
+      const currentX = event.touches[0]?.clientX;
 
-      if (startY === null || currentY === undefined) {
+      if (startY === null || startX === null || currentY === undefined || currentX === undefined) {
         return;
       }
 
       const deltaY = startY - currentY;
+      const deltaX = startX - currentX;
       const progress = teleprompterProgressRef.current;
       const scrollingDown = deltaY > 0;
       const scrollingUp = deltaY < 0;
+      const isMostlyVertical = Math.abs(deltaY) > Math.abs(deltaX);
+
+      if (!isMostlyVertical || Math.abs(deltaY) < 6) {
+        return;
+      }
 
       if ((scrollingDown && progress < 1) || (scrollingUp && progress > 0)) {
         event.preventDefault();
         updateProgressByDelta(deltaY, "touch");
         teleprompterTouchStartYRef.current = currentY;
+        teleprompterTouchStartXRef.current = currentX;
       }
     };
 
     const handleTouchEnd = () => {
       teleprompterTouchStartYRef.current = null;
+      teleprompterTouchStartXRef.current = null;
+      teleprompterTouchTrackActiveRef.current = false;
     };
 
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -374,29 +437,33 @@ export function HomeMessagesSection({
     const handleResize = () => {
       buildTeleprompter();
       const clampedProgress = clamp(teleprompterProgressRef.current, 0, 1);
-      teleprompterProgressRef.current = clampedProgress;
-      applyTeleprompterState(clampedProgress);
-      syncTeleprompterCompletion(clampedProgress);
+      commitTeleprompterProgress(clampedProgress);
     };
 
     buildTeleprompter();
     const initialProgress = clamp(teleprompterProgressRef.current, 0, 1);
-    teleprompterProgressRef.current = initialProgress;
-    applyTeleprompterState(initialProgress);
-    syncTeleprompterCompletion(initialProgress);
+    commitTeleprompterProgress(initialProgress);
 
     messagesSection.addEventListener("wheel", handleWheel, { passive: false });
     messagesSection.addEventListener("touchstart", handleTouchStart, { passive: true });
     messagesSection.addEventListener("touchmove", handleTouchMove, { passive: false });
     messagesSection.addEventListener("touchend", handleTouchEnd);
+    messagesSection.addEventListener("touchcancel", handleTouchEnd);
     window.addEventListener("keydown", handleKeyDown);
     window.addEventListener("resize", handleResize);
 
     return () => {
+      if (teleprompterProgressFrameIdRef.current !== null) {
+        window.cancelAnimationFrame(teleprompterProgressFrameIdRef.current);
+        teleprompterProgressFrameIdRef.current = null;
+      }
+
+      teleprompterPendingProgressRef.current = null;
       messagesSection.removeEventListener("wheel", handleWheel);
       messagesSection.removeEventListener("touchstart", handleTouchStart);
       messagesSection.removeEventListener("touchmove", handleTouchMove);
       messagesSection.removeEventListener("touchend", handleTouchEnd);
+      messagesSection.removeEventListener("touchcancel", handleTouchEnd);
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("resize", handleResize);
       reportCompletion(false);

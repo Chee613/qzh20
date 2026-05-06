@@ -29,7 +29,7 @@ export function LogoutButton() {
       disabled={isLoading}
       className="rounded-md border border-zinc-300 px-3 py-2 text-sm text-zinc-800 transition hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-50"
     >
-      {isLoading ? "Signing out..." : "Sign out"}
+      {isLoading ? "拜拜中..." : "拜拜"}
     </button>
   );
 }

@@ -70,6 +70,7 @@ export class SlideController {
 
     this.currentIndex = this.findClosestSectionIndex();
     this.createNavDots();
+    this.syncNavDotsViewportClass();
     this.setupObserver();
     this.bindEvents();
     this.updateActiveDot(this.currentIndex);
@@ -196,6 +197,16 @@ export class SlideController {
     document.body.appendChild(this.navDotsContainer);
   }
 
+  private syncNavDotsViewportClass(): void {
+    if (!this.navDotsContainer) {
+      return;
+    }
+
+    const isMobile = this.isMobileViewport();
+    this.navDotsContainer.classList.toggle("mobile", isMobile);
+    this.navDotsContainer.classList.toggle("desktop", !isMobile);
+  }
+
   private setupObserver(): void {
     const thresholds = Array.from(
       new Set([0, this.threshold * 0.5, this.threshold, 0.75, 1].map((value) => Number(value.toFixed(2)))),
@@ -215,6 +226,7 @@ export class SlideController {
   };
 
   private readonly handleViewportChange = (): void => {
+    this.syncNavDotsViewportClass();
     this.scheduleViewportSync();
   };
 

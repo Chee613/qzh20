@@ -258,6 +258,29 @@ export default function Home() {
     }`;
   }
 
+  function scrollToSection(href: SectionHref) {
+    const sectionId = href.slice(1);
+    const section = document.getElementById(sectionId);
+
+    setActiveSection(href);
+    setIsMobileMenuOpen(false);
+
+    if (!section) {
+      window.history.replaceState(null, "", href);
+      return;
+    }
+
+    const navHeight = getComputedStyle(document.documentElement).getPropertyValue("--site-nav-height").trim();
+    const navOffset = navHeight ? Number.parseFloat(navHeight) * 16 : 76;
+    const targetTop = Math.max(0, section.getBoundingClientRect().top + window.scrollY - navOffset);
+
+    window.history.replaceState(null, "", href);
+    window.scrollTo({
+      top: targetTop,
+      behavior: "smooth",
+    });
+  }
+
   return (
     <main className="min-h-[var(--app-screen-height)] bg-zinc-950 font-sans text-zinc-50 selection:bg-blue-500/30">
       <div className="fixed inset-x-0 top-0 z-50">
@@ -280,7 +303,15 @@ export default function Home() {
           <div className="flex items-center gap-3 sm:gap-6 md:gap-8">
             <div className="hidden items-center gap-8 text-sm font-medium md:flex">
               {SECTION_LINKS.slice(0, 3).map((link) => (
-                <a key={link.href} href={link.href} className={getDesktopLinkClass(link.href)}>
+                <a
+                  key={link.href}
+                  href={link.href}
+                  onClick={(event) => {
+                    event.preventDefault();
+                    scrollToSection(link.href);
+                  }}
+                  className={getDesktopLinkClass(link.href)}
+                >
                   {link.label}
                 </a>
               ))}
@@ -288,6 +319,10 @@ export default function Home() {
 
             <a
               href="#login-section"
+              onClick={(event) => {
+                event.preventDefault();
+                scrollToSection("#login-section");
+              }}
               className="group hidden items-center gap-3 rounded-full border border-blue-600 bg-white px-5 py-2.5 text-blue-700 shadow-lg shadow-blue-900/20 transition-all hover:bg-zinc-50 sm:flex"
             >
               <span className="text-sm font-bold">圈圈</span>
@@ -333,9 +368,9 @@ export default function Home() {
               <a
                 key={link.href}
                 href={link.href}
-                onClick={() => {
-                  setActiveSection(link.href);
-                  setIsMobileMenuOpen(false);
+                onClick={(event) => {
+                  event.preventDefault();
+                  scrollToSection(link.href);
                 }}
                 className={getMobileLinkClass(link.href)}
               >

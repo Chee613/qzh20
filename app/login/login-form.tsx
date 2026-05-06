@@ -83,7 +83,7 @@ export function LoginForm({ prefilledLoginId }: LoginFormProps) {
 
       <div className="space-y-2">
         <label htmlFor="passkey" className="block text-center text-xs font-medium text-zinc-400 sm:text-sm">
-          Enter your Passkey
+          秘密通行证
         </label>
         <input
           id="passkey"
@@ -103,9 +103,6 @@ export function LoginForm({ prefilledLoginId }: LoginFormProps) {
           className="w-full rounded-xl border border-zinc-700 bg-zinc-900/50 px-4 py-4 text-center font-mono text-xl tracking-[0.5em] text-zinc-100 shadow-inner transition-colors placeholder:tracking-normal placeholder:text-zinc-700 focus:border-blue-500/50 focus:bg-zinc-900 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
           placeholder="MMDDcode"
         />
-        <p className="text-center text-[0.68rem] text-zinc-500 sm:text-xs">
-          Format: 4 birthday digits followed by your 4-letter secret code
-        </p>
       </div>
 
       {error ? (
@@ -119,7 +116,7 @@ export function LoginForm({ prefilledLoginId }: LoginFormProps) {
         disabled={isSubmitting || !activeLoginId}
         className="w-full rounded-xl bg-gradient-to-r from-blue-600 to-emerald-500 px-4 py-3.5 text-sm font-bold text-white shadow-lg shadow-blue-900/20 transition-all hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-blue-500/50 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50"
       >
-        {isSubmitting ? "Unlocking..." : "View My Messages"}
+        {isSubmitting ? "Unlocking..." : "我要看我的圈圈！！！"}
       </button>
     </form>
   );

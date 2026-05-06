@@ -45,7 +45,7 @@ export function DashboardBackgroundMedia({
   const audioButtonLabel = isMuted
     ? hasEnabledAudio
       ? "Unmute Video"
-      : "Tap For Sound"
+      : "不要点击"
     : "Mute Video";
 
   return (
