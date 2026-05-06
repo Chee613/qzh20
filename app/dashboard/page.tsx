@@ -144,8 +144,8 @@ export default async function DashboardPage() {
             </svg>
           </div>
 
-          <div className="relative z-10 flex min-h-[13.5rem] items-start sm:min-h-[22rem] sm:items-center lg:min-h-[42rem] lg:items-end">
-            <div className="relative h-[15.5rem] w-full overflow-hidden sm:h-[24rem] lg:h-[42rem]">
+          <div className="relative z-10 flex min-h-[8rem] items-start sm:min-h-[22rem] sm:items-center lg:min-h-[42rem] lg:items-end">
+            <div className="relative ml-auto h-[7.5rem] w-[40%] max-w-[9.5rem] overflow-hidden sm:h-[24rem] sm:w-full sm:max-w-none lg:h-[42rem]">
               <Image
                 src={profilePicPath}
                 alt={`${session.name || session.loginId} profile`}
@@ -153,7 +153,7 @@ export default async function DashboardPage() {
                 priority
                 sizes="(max-width: 1024px) 100vw, 52vw"
                 unoptimized
-                className="object-contain object-top sm:object-center lg:object-bottom"
+                className="object-contain object-right sm:object-center lg:object-bottom"
               />
             </div>
           </div>
