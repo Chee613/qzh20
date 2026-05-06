@@ -27,6 +27,9 @@ export function HomeMessagesSection({
   const teleprompterProgressRef = useRef(0);
   const teleprompterPendingProgressRef = useRef<number | null>(null);
   const teleprompterProgressFrameIdRef = useRef<number | null>(null);
+  const teleprompterAutoPlayFrameIdRef = useRef<number | null>(null);
+  const teleprompterAutoPlayLastTimestampRef = useRef<number | null>(null);
+  const teleprompterAutoPlayResumeAtRef = useRef(0);
   const teleprompterTouchStartYRef = useRef<number | null>(null);
   const teleprompterTouchStartXRef = useRef<number | null>(null);
   const teleprompterTouchTrackActiveRef = useRef(false);
@@ -72,6 +75,7 @@ export function HomeMessagesSection({
     let totalTimelineUnits = 1;
 
     const HOLD_UNITS = 7;
+    const MOBILE_AUTO_PLAY_RESUME_DELAY_MS = 1_600;
     const SWITCH_UNITS = 8;
     const SWITCH_OUTGOING_CUTOFF = 0.62;
 
@@ -323,6 +327,11 @@ export function HomeMessagesSection({
       );
     };
 
+    const pauseMobileAutoPlay = () => {
+      teleprompterAutoPlayResumeAtRef.current = window.performance.now() + MOBILE_AUTO_PLAY_RESUME_DELAY_MS;
+      teleprompterAutoPlayLastTimestampRef.current = null;
+    };
+
     const updateProgressByDelta = (deltaY: number, source: ProgressInputSource) => {
       const mobile = isMobileViewport();
       const sourceAdjustedDelta =
@@ -375,6 +384,10 @@ export function HomeMessagesSection({
       teleprompterTouchTrackActiveRef.current = isTouchOnTrack;
       teleprompterTouchStartYRef.current = isTouchOnTrack ? touch?.clientY ?? null : null;
       teleprompterTouchStartXRef.current = isTouchOnTrack ? touch?.clientX ?? null : null;
+
+      if (isTouchOnTrack) {
+        pauseMobileAutoPlay();
+      }
     };
 
     const handleTouchMove = (event: TouchEvent) => {
@@ -407,6 +420,7 @@ export function HomeMessagesSection({
         updateProgressByDelta(deltaY, "touch");
         teleprompterTouchStartYRef.current = currentY;
         teleprompterTouchStartXRef.current = currentX;
+        pauseMobileAutoPlay();
       }
     };
 
@@ -440,17 +454,52 @@ export function HomeMessagesSection({
       commitTeleprompterProgress(clampedProgress);
     };
 
+    const runMobileAutoPlay = (timestamp: number) => {
+      teleprompterAutoPlayFrameIdRef.current = window.requestAnimationFrame(runMobileAutoPlay);
+
+      if (!isMobileViewport() || !isInLockZone()) {
+        teleprompterAutoPlayLastTimestampRef.current = null;
+        return;
+      }
+
+      if (
+        teleprompterTouchTrackActiveRef.current ||
+        timestamp < teleprompterAutoPlayResumeAtRef.current
+      ) {
+        teleprompterAutoPlayLastTimestampRef.current = null;
+        return;
+      }
+
+      const current = teleprompterProgressRef.current;
+      if (current >= 0.999) {
+        teleprompterAutoPlayLastTimestampRef.current = null;
+        return;
+      }
+
+      const lastTimestamp = teleprompterAutoPlayLastTimestampRef.current ?? timestamp;
+      const elapsedMs = Math.min(Math.max(timestamp - lastTimestamp, 0), 64);
+      teleprompterAutoPlayLastTimestampRef.current = timestamp;
+
+      const autoPlayDurationMs = Math.max(28_000, teleprompterLines.length * 1_900);
+      const nextProgress = clamp(current + elapsedMs / autoPlayDurationMs, 0, 1);
+
+      if (nextProgress !== current) {
+        scheduleTeleprompterProgress(nextProgress);
+      }
+    };
+
     buildTeleprompter();
     const initialProgress = clamp(teleprompterProgressRef.current, 0, 1);
     commitTeleprompterProgress(initialProgress);
 
     messagesSection.addEventListener("wheel", handleWheel, { passive: false });
-    messagesSection.addEventListener("touchstart", handleTouchStart, { passive: true });
-    messagesSection.addEventListener("touchmove", handleTouchMove, { passive: false });
-    messagesSection.addEventListener("touchend", handleTouchEnd);
-    messagesSection.addEventListener("touchcancel", handleTouchEnd);
+    track.addEventListener("touchstart", handleTouchStart, { passive: true });
+    track.addEventListener("touchmove", handleTouchMove, { passive: false });
+    track.addEventListener("touchend", handleTouchEnd);
+    track.addEventListener("touchcancel", handleTouchEnd);
     window.addEventListener("keydown", handleKeyDown);
     window.addEventListener("resize", handleResize);
+    teleprompterAutoPlayFrameIdRef.current = window.requestAnimationFrame(runMobileAutoPlay);
 
     return () => {
       if (teleprompterProgressFrameIdRef.current !== null) {
@@ -458,12 +507,18 @@ export function HomeMessagesSection({
         teleprompterProgressFrameIdRef.current = null;
       }
 
+      if (teleprompterAutoPlayFrameIdRef.current !== null) {
+        window.cancelAnimationFrame(teleprompterAutoPlayFrameIdRef.current);
+        teleprompterAutoPlayFrameIdRef.current = null;
+      }
+
       teleprompterPendingProgressRef.current = null;
+      teleprompterAutoPlayLastTimestampRef.current = null;
       messagesSection.removeEventListener("wheel", handleWheel);
-      messagesSection.removeEventListener("touchstart", handleTouchStart);
-      messagesSection.removeEventListener("touchmove", handleTouchMove);
-      messagesSection.removeEventListener("touchend", handleTouchEnd);
-      messagesSection.removeEventListener("touchcancel", handleTouchEnd);
+      track.removeEventListener("touchstart", handleTouchStart);
+      track.removeEventListener("touchmove", handleTouchMove);
+      track.removeEventListener("touchend", handleTouchEnd);
+      track.removeEventListener("touchcancel", handleTouchEnd);
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("resize", handleResize);
       reportCompletion(false);
