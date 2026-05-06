@@ -130,7 +130,7 @@ export default async function DashboardPage() {
       />
 
       <main className="relative z-10 mx-auto w-full max-w-7xl px-4 py-3 sm:px-5 sm:py-6 md:px-8 md:py-10">
-        <section className="relative grid min-h-[calc(var(--app-screen-height)-1.5rem)] content-start items-start gap-4 overflow-hidden py-2 sm:min-h-[calc(var(--app-screen-height)-3rem)] sm:gap-8 sm:py-4 lg:min-h-[calc(var(--app-screen-height)-4rem)] lg:grid-cols-[1.08fr_0.92fr] lg:gap-10 lg:py-14">
+        <section className="relative grid min-h-[calc(var(--app-screen-height)-1.5rem)] content-start items-start gap-6 overflow-hidden pb-3 pt-10 sm:min-h-[calc(var(--app-screen-height)-3rem)] sm:gap-8 sm:py-4 lg:min-h-[calc(var(--app-screen-height)-4rem)] lg:grid-cols-[1.08fr_0.92fr] lg:gap-10 lg:py-14">
           <div className="pointer-events-none absolute inset-x-[18%] top-[8%] hidden h-[34rem] opacity-90 lg:block">
             <svg
               aria-hidden="true"
@@ -144,8 +144,8 @@ export default async function DashboardPage() {
             </svg>
           </div>
 
-          <div className="relative z-10 flex min-h-[8rem] items-start sm:min-h-[22rem] sm:items-center lg:min-h-[42rem] lg:items-end">
-            <div className="relative ml-auto h-[7.5rem] w-[40%] max-w-[9.5rem] overflow-hidden sm:h-[24rem] sm:w-full sm:max-w-none lg:h-[42rem]">
+          <div className="relative z-10 hidden min-h-[13.5rem] items-start sm:min-h-[22rem] sm:items-center lg:flex lg:min-h-[42rem] lg:items-end">
+            <div className="relative h-[15.5rem] w-full overflow-hidden sm:h-[24rem] lg:h-[42rem]">
               <Image
                 src={profilePicPath}
                 alt={`${session.name || session.loginId} profile`}
@@ -153,13 +153,27 @@ export default async function DashboardPage() {
                 priority
                 sizes="(max-width: 1024px) 100vw, 52vw"
                 unoptimized
-                className="object-contain object-right sm:object-center lg:object-bottom"
+                className="object-contain object-top sm:object-center lg:object-bottom"
               />
             </div>
           </div>
 
-          <div className="relative z-10 flex justify-end self-start pt-0 sm:pt-1 lg:pt-6">
-            <div className="flex min-h-0 w-full max-w-xl flex-col rounded-[2rem] border border-white/18 bg-white/[0.12] p-4 shadow-[0_26px_90px_rgba(8,12,18,0.22)] backdrop-blur-[24px] sm:min-h-[24rem] sm:rounded-[2.35rem] sm:p-6 md:min-h-[68vh] md:p-8">
+          <div className="relative z-10 flex justify-end self-start pt-1 sm:pt-1 lg:pt-6">
+            <div className="relative mt-[110px] w-full max-w-xl pt-[12.25rem] sm:mt-0 sm:pt-0">
+              <div className="absolute right-4 top-8 lg:hidden">
+                <div className="relative h-[9.9rem] w-[12.6rem] overflow-hidden">
+                  <Image
+                    src={profilePicPath}
+                    alt={`${session.name || session.loginId} profile`}
+                    fill
+                    sizes="152px"
+                    unoptimized
+                    className="object-contain object-right"
+                  />
+                </div>
+              </div>
+
+              <div className="flex min-h-0 w-full flex-col rounded-[2rem] border border-white/18 bg-white/[0.12] p-4 shadow-[0_26px_90px_rgba(8,12,18,0.22)] backdrop-blur-[24px] sm:min-h-[24rem] sm:rounded-[2.35rem] sm:p-6 md:min-h-[68vh] md:p-8">
               <div className="flex items-start justify-between gap-4 sm:gap-5">
                 <div className="max-w-sm">
                   <p className="text-[0.7rem] font-semibold uppercase tracking-[0.34em] text-white/64">
@@ -204,6 +218,7 @@ export default async function DashboardPage() {
                     </p>
                   </>
                 )}
+              </div>
               </div>
             </div>
           </div>
