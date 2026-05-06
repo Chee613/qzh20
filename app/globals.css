@@ -120,6 +120,34 @@ section {
   box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.24);
 }
 
+.nav-shine {
+  position: absolute;
+  left: -100%;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  transform: skewX(-20deg);
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.4) 50%,
+    transparent 100%
+  );
+  animation: nav-shine-sweep 5s ease-in-out infinite;
+}
+
+@keyframes nav-shine-sweep {
+  0%,
+  15% {
+    left: -110%;
+  }
+
+  55%,
+  100% {
+    left: 210%;
+  }
+}
+
 @media (max-width: 768px) {
   .nav-dots {
     right: 0.35rem;
