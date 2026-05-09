@@ -361,6 +361,10 @@ export function HomeMessagesSection({
     };
 
     const handleWheel = (event: WheelEvent) => {
+      if (isMobileViewport()) {
+        return;
+      }
+
       if (!isInLockZone()) {
         return;
       }
@@ -376,6 +380,13 @@ export function HomeMessagesSection({
     };
 
     const handleTouchStart = (event: TouchEvent) => {
+      if (isMobileViewport()) {
+        teleprompterTouchTrackActiveRef.current = false;
+        teleprompterTouchStartYRef.current = null;
+        teleprompterTouchStartXRef.current = null;
+        return;
+      }
+
       const trackTarget = event.target;
       const touch = event.touches[0];
       const isTouchOnTrack =
@@ -391,6 +402,10 @@ export function HomeMessagesSection({
     };
 
     const handleTouchMove = (event: TouchEvent) => {
+      if (isMobileViewport()) {
+        return;
+      }
+
       if (!teleprompterTouchTrackActiveRef.current || !isInLockZone()) {
         return;
       }
@@ -431,6 +446,10 @@ export function HomeMessagesSection({
     };
 
     const handleKeyDown = (event: KeyboardEvent) => {
+      if (isMobileViewport()) {
+        return;
+      }
+
       if (!isInLockZone()) {
         return;
       }

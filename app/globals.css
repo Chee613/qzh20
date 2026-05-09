@@ -305,7 +305,7 @@ section {
   }
 
   .teleprompter-track {
-    touch-action: pan-x pinch-zoom;
+    touch-action: pan-y pinch-zoom;
   }
 
   .teleprompter-line {

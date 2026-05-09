@@ -225,7 +225,10 @@ export default function Home() {
       disableSwipeSelector: "main > section:not(#messages), #messages .teleprompter-track",
       dotLabelAttribute: "data-nav-short",
       canTransition: ({ currentSection, targetSection }) => {
+        const isMobileViewport = window.matchMedia("(max-width: 768px)").matches;
+
         if (
+          !isMobileViewport &&
           currentSection.id === "messages" &&
           targetSection.id !== "messages" &&
           !teleprompterCompletedRef.current

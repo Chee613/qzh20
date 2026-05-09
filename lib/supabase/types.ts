@@ -92,6 +92,38 @@ export interface Database {
           }
         ];
       };
+      dashboard_comments: {
+        Row: {
+          id: string;
+          login_id: string;
+          member_name: string;
+          content: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          login_id: string;
+          member_name: string;
+          content: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          login_id?: string;
+          member_name?: string;
+          content?: string;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "dashboard_comments_login_id_fkey";
+            columns: ["login_id"];
+            isOneToOne: false;
+            referencedRelation: "member_profiles";
+            referencedColumns: ["login_id"];
+          }
+        ];
+      };
     };
     Views: {
       [_ in never]: never;
