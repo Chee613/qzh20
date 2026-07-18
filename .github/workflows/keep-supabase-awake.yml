@@ -10,4 +10,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Ping database health endpoint
-        run: curl --fail --retry 2 https://YOUR-SITE.vercel.app/api/health
+        run: curl --fail --retry 2 https://qzh20.vercel.app/api/health
