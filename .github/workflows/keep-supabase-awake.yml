@@ -10,4 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Ping database health endpoint
-        run: curl --fail --retry 2 https://qzh20.vercel.app/api/health
+        run: |
+          code=$(curl -sS -o /dev/null -w "%{http_code}" --retry 3 --retry-all-errors --max-time 30 https://qzh20.vercel.app/api/health)
+          echo "HTTP $code"
+          [ "$code" = "200" ] || [ "$code" = "503" ]
