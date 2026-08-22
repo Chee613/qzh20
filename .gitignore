@@ -46,9 +46,12 @@ tmp/
 .temp/
 *.tmp
 
-# Claude / Tool local configs
+# Claude / Agent / Tool local configs
 .claude/
 .agents/
+CLAUDE.md
+AGENTS.md
+GEMINI.md
 
 # Operating System files
 .DS_Store
