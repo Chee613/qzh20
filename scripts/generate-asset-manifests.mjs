@@ -6,7 +6,7 @@ const PUBLIC_DIR = path.join(ROOT, "public");
 const OUTPUT_DIR = path.join(ROOT, "lib", "generated");
 const OUTPUT_PATH = path.join(OUTPUT_DIR, "asset-manifests.json");
 
-const MASCOT_VIDEO_DIRECTORIES = ["mascot-video", "moscot-video"];
+const MASCOT_VIDEO_DIRECTORIES = ["mascot-videos", "mascot-video", "moscot-video"];
 const SUPPORTED_MASCOT_VIDEO_EXTENSIONS = new Set([
   ".mp4",
   ".webm",

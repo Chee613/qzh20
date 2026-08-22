@@ -1,181 +1,258 @@
 {
   "mascotVideos": [
-    "/moscot-video/dreamina-2026-05-05-4838-%E5%8F%82%E8%80%83%E4%B8%8A%E4%BC%A0%E7%9A%84%E5%90%89%E7%A5%A5%E7%89%A9%E5%9B%BE%E7%89%87%EF%BC%8C%E4%BF%9D%E6%8C%81%E8%A7%92%E8%89%B2%E5%A4%96%E5%BD%A2%E4%B8%80%E8%87%B4%E3%80%82%E8%93%9D%E8%89%B2%E6%81%90%E9%BE%99%E5%AE%9D%E5%AE%9D%E5%B0%9D%E8%AF%95%E5%BE%80%E5%89%8D%E8%B5%B0%E4%B8%A4%E6%AD%A5%EF%BC%8C%E5%9B%A0%E4%B8%BA%E8%BA%AB%E4%BD%93%E5%9C%86%E5%9C%86....mp4",
-    "/moscot-video/dreamina-2026-05-05-6680-%E5%8F%82%E8%80%83%E4%B8%8A%E4%BC%A0%E7%9A%84%E5%90%89%E7%A5%A5%E7%89%A9%E5%9B%BE%E7%89%87%EF%BC%8C%E4%BF%9D%E6%8C%81%E8%A7%92%E8%89%B2%E8%AE%BE%E8%AE%A1%E4%B8%80%E8%87%B4%E3%80%82%E8%93%9D%E8%89%B2%E6%81%90%E9%BE%99%E5%AE%9D%E5%AE%9D%E6%8A%AC%E5%A4%B4%E7%9C%8B%E5%88%B0%E4%B8%80%E9%A2%97%E9%97%AA%E9%97%AA%E5%8F%91%E5%85%89%E7%9A%84%E5%B0%8F%E6%98%9F%E6%98%9F....mp4.mp4",
-    "/moscot-video/lv_0_20260504140457.mp4",
-    "/moscot-video/lv_0_20260504141435.mp4",
-    "/moscot-video/lv_0_20260504141457.mp4",
-    "/moscot-video/lv_0_20260504141526.mp4"
+    "/mascot-videos/mascot-anim-1.mp4",
+    "/mascot-videos/mascot-anim-2.mp4",
+    "/mascot-videos/mascot-anim-3.mp4",
+    "/mascot-videos/mascot-anim-4.mp4",
+    "/mascot-videos/mascot-star.mp4",
+    "/mascot-videos/mascot-walking.mp4"
   ],
   "memories": {
-    "beima-fenzhan": [
+    "zongzhan": [
       {
-        "id": "beima-fenzhan-1",
+        "id": "zongzhan-1",
         "srcCandidates": [
-          "/memories/beima-fenzhan/1.jpg"
+          "/memories/zongzhan/1.jpg"
         ],
-        "alt": "Beima Memories photo 1"
+        "alt": "Zongzhan Memories photo 1"
       },
       {
-        "id": "beima-fenzhan-2",
+        "id": "zongzhan-2",
         "srcCandidates": [
-          "/memories/beima-fenzhan/2.jpg"
+          "/memories/zongzhan/2.jpg"
         ],
-        "alt": "Beima Memories photo 2"
+        "alt": "Zongzhan Memories photo 2"
       },
       {
-        "id": "beima-fenzhan-3",
+        "id": "zongzhan-3",
         "srcCandidates": [
-          "/memories/beima-fenzhan/3.jpg"
+          "/memories/zongzhan/3.jpg"
         ],
-        "alt": "Beima Memories photo 3"
+        "alt": "Zongzhan Memories photo 3"
       },
       {
-        "id": "beima-fenzhan-4",
+        "id": "zongzhan-4",
         "srcCandidates": [
-          "/memories/beima-fenzhan/4.jpg"
+          "/memories/zongzhan/4.jpg"
         ],
-        "alt": "Beima Memories photo 4"
+        "alt": "Zongzhan Memories photo 4"
       },
       {
-        "id": "beima-fenzhan-5",
+        "id": "zongzhan-5",
         "srcCandidates": [
-          "/memories/beima-fenzhan/5.jpg"
+          "/memories/zongzhan/5.jpg"
         ],
-        "alt": "Beima Memories photo 5"
+        "alt": "Zongzhan Memories photo 5"
       },
       {
-        "id": "beima-fenzhan-6",
+        "id": "zongzhan-6",
         "srcCandidates": [
-          "/memories/beima-fenzhan/6.jpg"
+          "/memories/zongzhan/6.jpg"
         ],
-        "alt": "Beima Memories photo 6"
+        "alt": "Zongzhan Memories photo 6"
       },
       {
-        "id": "beima-fenzhan-7",
+        "id": "zongzhan-7",
         "srcCandidates": [
-          "/memories/beima-fenzhan/7.jpg"
+          "/memories/zongzhan/7.jpg"
         ],
-        "alt": "Beima Memories photo 7"
+        "alt": "Zongzhan Memories photo 7"
       },
       {
-        "id": "beima-fenzhan-8",
+        "id": "zongzhan-8",
         "srcCandidates": [
-          "/memories/beima-fenzhan/8.jpg"
+          "/memories/zongzhan/8.jpg"
         ],
-        "alt": "Beima Memories photo 8"
+        "alt": "Zongzhan Memories photo 8"
       },
       {
-        "id": "beima-fenzhan-9",
+        "id": "zongzhan-9",
         "srcCandidates": [
-          "/memories/beima-fenzhan/9.jpg"
+          "/memories/zongzhan/9.jpg"
         ],
-        "alt": "Beima Memories photo 9"
+        "alt": "Zongzhan Memories photo 9"
       },
       {
-        "id": "beima-fenzhan-10",
+        "id": "zongzhan-10",
         "srcCandidates": [
-          "/memories/beima-fenzhan/10.jpg"
+          "/memories/zongzhan/10.jpg"
         ],
-        "alt": "Beima Memories photo 10"
+        "alt": "Zongzhan Memories photo 10"
       },
       {
-        "id": "beima-fenzhan-11",
+        "id": "zongzhan-11",
         "srcCandidates": [
-          "/memories/beima-fenzhan/11.jpg"
+          "/memories/zongzhan/11.jpg"
         ],
-        "alt": "Beima Memories photo 11"
+        "alt": "Zongzhan Memories photo 11"
       },
       {
-        "id": "beima-fenzhan-12",
+        "id": "zongzhan-12",
         "srcCandidates": [
-          "/memories/beima-fenzhan/12.jpg"
+          "/memories/zongzhan/12.jpg"
         ],
-        "alt": "Beima Memories photo 12"
+        "alt": "Zongzhan Memories photo 12"
       },
       {
-        "id": "beima-fenzhan-13",
+        "id": "zongzhan-13",
         "srcCandidates": [
-          "/memories/beima-fenzhan/13.jpg"
+          "/memories/zongzhan/13.jpg"
         ],
-        "alt": "Beima Memories photo 13"
+        "alt": "Zongzhan Memories photo 13"
       },
       {
-        "id": "beima-fenzhan-14",
+        "id": "zongzhan-14",
         "srcCandidates": [
-          "/memories/beima-fenzhan/14.jpg"
+          "/memories/zongzhan/14.jpg"
         ],
-        "alt": "Beima Memories photo 14"
+        "alt": "Zongzhan Memories photo 14"
       },
       {
-        "id": "beima-fenzhan-15",
+        "id": "zongzhan-15",
         "srcCandidates": [
-          "/memories/beima-fenzhan/15.jpg"
+          "/memories/zongzhan/15.jpg"
         ],
-        "alt": "Beima Memories photo 15"
+        "alt": "Zongzhan Memories photo 15"
       },
       {
-        "id": "beima-fenzhan-16",
+        "id": "zongzhan-16",
         "srcCandidates": [
-          "/memories/beima-fenzhan/16.jpg"
+          "/memories/zongzhan/16.jpg"
         ],
-        "alt": "Beima Memories photo 16"
+        "alt": "Zongzhan Memories photo 16"
       },
       {
-        "id": "beima-fenzhan-17",
+        "id": "zongzhan-17",
         "srcCandidates": [
-          "/memories/beima-fenzhan/17.jpg"
+          "/memories/zongzhan/17.jpg"
         ],
-        "alt": "Beima Memories photo 17"
+        "alt": "Zongzhan Memories photo 17"
       },
       {
-        "id": "beima-fenzhan-18",
+        "id": "zongzhan-18",
         "srcCandidates": [
-          "/memories/beima-fenzhan/18.jpg"
+          "/memories/zongzhan/18.jpg"
         ],
-        "alt": "Beima Memories photo 18"
+        "alt": "Zongzhan Memories photo 18"
       },
       {
-        "id": "beima-fenzhan-19",
+        "id": "zongzhan-19",
         "srcCandidates": [
-          "/memories/beima-fenzhan/19.jpg"
+          "/memories/zongzhan/19.jpg"
         ],
-        "alt": "Beima Memories photo 19"
+        "alt": "Zongzhan Memories photo 19"
       },
       {
-        "id": "beima-fenzhan-20",
+        "id": "zongzhan-20",
         "srcCandidates": [
-          "/memories/beima-fenzhan/20.jpg"
+          "/memories/zongzhan/20.jpg"
         ],
-        "alt": "Beima Memories photo 20"
+        "alt": "Zongzhan Memories photo 20"
       },
       {
-        "id": "beima-fenzhan-21",
+        "id": "zongzhan-21",
         "srcCandidates": [
-          "/memories/beima-fenzhan/21.jpg"
+          "/memories/zongzhan/21.jpg"
         ],
-        "alt": "Beima Memories photo 21"
+        "alt": "Zongzhan Memories photo 21"
       },
       {
-        "id": "beima-fenzhan-22",
+        "id": "zongzhan-22",
         "srcCandidates": [
-          "/memories/beima-fenzhan/22.jpg"
+          "/memories/zongzhan/22.jpg"
         ],
-        "alt": "Beima Memories photo 22"
+        "alt": "Zongzhan Memories photo 22"
       },
       {
-        "id": "beima-fenzhan-23",
+        "id": "zongzhan-23",
         "srcCandidates": [
-          "/memories/beima-fenzhan/23.jpg"
+          "/memories/zongzhan/23.jpg"
         ],
-        "alt": "Beima Memories photo 23"
+        "alt": "Zongzhan Memories photo 23"
       },
       {
-        "id": "beima-fenzhan-24",
+        "id": "zongzhan-24",
         "srcCandidates": [
-          "/memories/beima-fenzhan/24.jpg"
+          "/memories/zongzhan/24.jpg"
         ],
-        "alt": "Beima Memories photo 24"
+        "alt": "Zongzhan Memories photo 24"
+      },
+      {
+        "id": "zongzhan-25",
+        "srcCandidates": [
+          "/memories/zongzhan/25.jpg"
+        ],
+        "alt": "Zongzhan Memories photo 25"
+      },
+      {
+        "id": "zongzhan-26",
+        "srcCandidates": [
+          "/memories/zongzhan/26.jpg"
+        ],
+        "alt": "Zongzhan Memories photo 26"
+      },
+      {
+        "id": "zongzhan-27",
+        "srcCandidates": [
+          "/memories/zongzhan/27.jpg"
+        ],
+        "alt": "Zongzhan Memories photo 27"
+      },
+      {
+        "id": "zongzhan-28",
+        "srcCandidates": [
+          "/memories/zongzhan/28.jpg"
+        ],
+        "alt": "Zongzhan Memories photo 28"
+      },
+      {
+        "id": "zongzhan-29",
+        "srcCandidates": [
+          "/memories/zongzhan/29.jpg"
+        ],
+        "alt": "Zongzhan Memories photo 29"
+      },
+      {
+        "id": "zongzhan-30",
+        "srcCandidates": [
+          "/memories/zongzhan/30.jpg"
+        ],
+        "alt": "Zongzhan Memories photo 30"
+      },
+      {
+        "id": "zongzhan-31",
+        "srcCandidates": [
+          "/memories/zongzhan/31.jpg"
+        ],
+        "alt": "Zongzhan Memories photo 31"
+      },
+      {
+        "id": "zongzhan-32",
+        "srcCandidates": [
+          "/memories/zongzhan/32.jpg"
+        ],
+        "alt": "Zongzhan Memories photo 32"
+      },
+      {
+        "id": "zongzhan-33",
+        "srcCandidates": [
+          "/memories/zongzhan/33.jpg"
+        ],
+        "alt": "Zongzhan Memories photo 33"
+      },
+      {
+        "id": "zongzhan-34",
+        "srcCandidates": [
+          "/memories/zongzhan/34.jpg"
+        ],
+        "alt": "Zongzhan Memories photo 34"
+      },
+      {
+        "id": "zongzhan-35",
+        "srcCandidates": [
+          "/memories/zongzhan/35.jpg"
+        ],
+        "alt": "Zongzhan Memories photo 35"
       }
     ],
     "nanma-fenzhan": [
@@ -509,244 +586,174 @@
         "alt": "Nanma Memories photo 47"
       }
     ],
-    "zongzhan": [
+    "beima-fenzhan": [
       {
-        "id": "zongzhan-1",
+        "id": "beima-fenzhan-1",
         "srcCandidates": [
-          "/memories/zongzhan/1.jpg"
+          "/memories/beima-fenzhan/1.jpg"
         ],
-        "alt": "Zongzhan Memories photo 1"
+        "alt": "Beima Memories photo 1"
       },
       {
-        "id": "zongzhan-2",
+        "id": "beima-fenzhan-2",
         "srcCandidates": [
-          "/memories/zongzhan/2.jpg"
+          "/memories/beima-fenzhan/2.jpg"
         ],
-        "alt": "Zongzhan Memories photo 2"
+        "alt": "Beima Memories photo 2"
       },
       {
-        "id": "zongzhan-3",
+        "id": "beima-fenzhan-3",
         "srcCandidates": [
-          "/memories/zongzhan/3.jpg"
+          "/memories/beima-fenzhan/3.jpg"
         ],
-        "alt": "Zongzhan Memories photo 3"
+        "alt": "Beima Memories photo 3"
       },
       {
-        "id": "zongzhan-4",
+        "id": "beima-fenzhan-4",
         "srcCandidates": [
-          "/memories/zongzhan/4.jpg"
+          "/memories/beima-fenzhan/4.jpg"
         ],
-        "alt": "Zongzhan Memories photo 4"
+        "alt": "Beima Memories photo 4"
       },
       {
-        "id": "zongzhan-5",
+        "id": "beima-fenzhan-5",
         "srcCandidates": [
-          "/memories/zongzhan/5.jpg"
+          "/memories/beima-fenzhan/5.jpg"
         ],
-        "alt": "Zongzhan Memories photo 5"
+        "alt": "Beima Memories photo 5"
       },
       {
-        "id": "zongzhan-6",
+        "id": "beima-fenzhan-6",
         "srcCandidates": [
-          "/memories/zongzhan/6.jpg"
+          "/memories/beima-fenzhan/6.jpg"
         ],
-        "alt": "Zongzhan Memories photo 6"
+        "alt": "Beima Memories photo 6"
       },
       {
-        "id": "zongzhan-7",
+        "id": "beima-fenzhan-7",
         "srcCandidates": [
-          "/memories/zongzhan/7.jpg"
+          "/memories/beima-fenzhan/7.jpg"
         ],
-        "alt": "Zongzhan Memories photo 7"
+        "alt": "Beima Memories photo 7"
       },
       {
-        "id": "zongzhan-8",
+        "id": "beima-fenzhan-8",
         "srcCandidates": [
-          "/memories/zongzhan/8.jpg"
+          "/memories/beima-fenzhan/8.jpg"
         ],
-        "alt": "Zongzhan Memories photo 8"
+        "alt": "Beima Memories photo 8"
       },
       {
-        "id": "zongzhan-9",
+        "id": "beima-fenzhan-9",
         "srcCandidates": [
-          "/memories/zongzhan/9.jpg"
+          "/memories/beima-fenzhan/9.jpg"
         ],
-        "alt": "Zongzhan Memories photo 9"
+        "alt": "Beima Memories photo 9"
       },
       {
-        "id": "zongzhan-10",
+        "id": "beima-fenzhan-10",
         "srcCandidates": [
-          "/memories/zongzhan/10.jpg"
+          "/memories/beima-fenzhan/10.jpg"
         ],
-        "alt": "Zongzhan Memories photo 10"
+        "alt": "Beima Memories photo 10"
       },
       {
-        "id": "zongzhan-11",
+        "id": "beima-fenzhan-11",
         "srcCandidates": [
-          "/memories/zongzhan/11.jpg"
+          "/memories/beima-fenzhan/11.jpg"
         ],
-        "alt": "Zongzhan Memories photo 11"
+        "alt": "Beima Memories photo 11"
       },
       {
-        "id": "zongzhan-12",
+        "id": "beima-fenzhan-12",
         "srcCandidates": [
-          "/memories/zongzhan/12.jpg"
+          "/memories/beima-fenzhan/12.jpg"
         ],
-        "alt": "Zongzhan Memories photo 12"
+        "alt": "Beima Memories photo 12"
       },
       {
-        "id": "zongzhan-13",
+        "id": "beima-fenzhan-13",
         "srcCandidates": [
-          "/memories/zongzhan/13.jpg"
+          "/memories/beima-fenzhan/13.jpg"
         ],
-        "alt": "Zongzhan Memories photo 13"
+        "alt": "Beima Memories photo 13"
       },
       {
-        "id": "zongzhan-14",
+        "id": "beima-fenzhan-14",
         "srcCandidates": [
-          "/memories/zongzhan/14.jpg"
+          "/memories/beima-fenzhan/14.jpg"
         ],
-        "alt": "Zongzhan Memories photo 14"
+        "alt": "Beima Memories photo 14"
       },
       {
-        "id": "zongzhan-15",
+        "id": "beima-fenzhan-15",
         "srcCandidates": [
-          "/memories/zongzhan/15.jpg"
+          "/memories/beima-fenzhan/15.jpg"
         ],
-        "alt": "Zongzhan Memories photo 15"
+        "alt": "Beima Memories photo 15"
       },
       {
-        "id": "zongzhan-16",
+        "id": "beima-fenzhan-16",
         "srcCandidates": [
-          "/memories/zongzhan/16.jpg"
+          "/memories/beima-fenzhan/16.jpg"
         ],
-        "alt": "Zongzhan Memories photo 16"
+        "alt": "Beima Memories photo 16"
       },
       {
-        "id": "zongzhan-17",
+        "id": "beima-fenzhan-17",
         "srcCandidates": [
-          "/memories/zongzhan/17.jpg"
+          "/memories/beima-fenzhan/17.jpg"
         ],
-        "alt": "Zongzhan Memories photo 17"
+        "alt": "Beima Memories photo 17"
       },
       {
-        "id": "zongzhan-18",
+        "id": "beima-fenzhan-18",
         "srcCandidates": [
-          "/memories/zongzhan/18.jpg"
+          "/memories/beima-fenzhan/18.jpg"
         ],
-        "alt": "Zongzhan Memories photo 18"
+        "alt": "Beima Memories photo 18"
       },
       {
-        "id": "zongzhan-19",
+        "id": "beima-fenzhan-19",
         "srcCandidates": [
-          "/memories/zongzhan/19.jpg"
+          "/memories/beima-fenzhan/19.jpg"
         ],
-        "alt": "Zongzhan Memories photo 19"
+        "alt": "Beima Memories photo 19"
       },
       {
-        "id": "zongzhan-20",
+        "id": "beima-fenzhan-20",
         "srcCandidates": [
-          "/memories/zongzhan/20.jpg"
+          "/memories/beima-fenzhan/20.jpg"
         ],
-        "alt": "Zongzhan Memories photo 20"
+        "alt": "Beima Memories photo 20"
       },
       {
-        "id": "zongzhan-21",
+        "id": "beima-fenzhan-21",
         "srcCandidates": [
-          "/memories/zongzhan/21.jpg"
+          "/memories/beima-fenzhan/21.jpg"
         ],
-        "alt": "Zongzhan Memories photo 21"
+        "alt": "Beima Memories photo 21"
       },
       {
-        "id": "zongzhan-22",
+        "id": "beima-fenzhan-22",
         "srcCandidates": [
-          "/memories/zongzhan/22.jpg"
+          "/memories/beima-fenzhan/22.jpg"
         ],
-        "alt": "Zongzhan Memories photo 22"
+        "alt": "Beima Memories photo 22"
       },
       {
-        "id": "zongzhan-23",
+        "id": "beima-fenzhan-23",
         "srcCandidates": [
-          "/memories/zongzhan/23.jpg"
+          "/memories/beima-fenzhan/23.jpg"
         ],
-        "alt": "Zongzhan Memories photo 23"
+        "alt": "Beima Memories photo 23"
       },
       {
-        "id": "zongzhan-24",
+        "id": "beima-fenzhan-24",
         "srcCandidates": [
-          "/memories/zongzhan/24.jpg"
+          "/memories/beima-fenzhan/24.jpg"
         ],
-        "alt": "Zongzhan Memories photo 24"
-      },
-      {
-        "id": "zongzhan-25",
-        "srcCandidates": [
-          "/memories/zongzhan/25.jpg"
-        ],
-        "alt": "Zongzhan Memories photo 25"
-      },
-      {
-        "id": "zongzhan-26",
-        "srcCandidates": [
-          "/memories/zongzhan/26.jpg"
-        ],
-        "alt": "Zongzhan Memories photo 26"
-      },
-      {
-        "id": "zongzhan-27",
-        "srcCandidates": [
-          "/memories/zongzhan/27.jpg"
-        ],
-        "alt": "Zongzhan Memories photo 27"
-      },
-      {
-        "id": "zongzhan-28",
-        "srcCandidates": [
-          "/memories/zongzhan/28.jpg"
-        ],
-        "alt": "Zongzhan Memories photo 28"
-      },
-      {
-        "id": "zongzhan-29",
-        "srcCandidates": [
-          "/memories/zongzhan/29.jpg"
-        ],
-        "alt": "Zongzhan Memories photo 29"
-      },
-      {
-        "id": "zongzhan-30",
-        "srcCandidates": [
-          "/memories/zongzhan/30.jpg"
-        ],
-        "alt": "Zongzhan Memories photo 30"
-      },
-      {
-        "id": "zongzhan-31",
-        "srcCandidates": [
-          "/memories/zongzhan/31.jpg"
-        ],
-        "alt": "Zongzhan Memories photo 31"
-      },
-      {
-        "id": "zongzhan-32",
-        "srcCandidates": [
-          "/memories/zongzhan/32.jpg"
-        ],
-        "alt": "Zongzhan Memories photo 32"
-      },
-      {
-        "id": "zongzhan-33",
-        "srcCandidates": [
-          "/memories/zongzhan/33.jpg"
-        ],
-        "alt": "Zongzhan Memories photo 33"
-      },
-      {
-        "id": "zongzhan-35",
-        "srcCandidates": [
-          "/memories/zongzhan/35.jpg"
-        ],
-        "alt": "Zongzhan Memories photo 35"
+        "alt": "Beima Memories photo 24"
       }
     ]
   }
