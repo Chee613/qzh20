@@ -2,7 +2,8 @@ name: Keep Supabase Awake
 
 on:
   schedule:
-    - cron: "17 2 1,6,11,16,21,26 * *"
+    # Runs every 3 days at 02:17 UTC (safely below Supabase's 7-day inactivity pause threshold)
+    - cron: "17 2 */3 * *"
   workflow_dispatch:
 
 jobs:
@@ -11,6 +12,22 @@ jobs:
     steps:
       - name: Ping database health endpoint
         run: |
-          code=$(curl -sS -o /dev/null -w "%{http_code}" --retry 3 --retry-all-errors --max-time 30 https://qzh20.vercel.app/api/health)
-          echo "HTTP $code"
-          [ "$code" = "200" ] || [ "$code" = "503" ]
+          # Use a temporary file instead of /dev/null to avoid curl exit code 23 (ftruncate failure on character devices during retry)
+          HTTP_CODE=$(curl -sS -w "%{http_code}" -o /tmp/health_response.json --retry 2 --max-time 30 https://qzh20.vercel.app/api/health || echo "000")
+          echo "HTTP Status: $HTTP_CODE"
+          echo "Response Body:"
+          cat /tmp/health_response.json || true
+          echo ""
+
+          if [ "$HTTP_CODE" = "200" ]; then
+            echo "✅ Supabase is active and database check passed."
+            exit 0
+          elif [ "$HTTP_CODE" = "503" ]; then
+            echo "❌ HTTP 503: Supabase is paused or database connection degraded."
+            echo "A paused Supabase project cannot be woken up by HTTP pings; it must be resumed in the Supabase Dashboard."
+            exit 1
+          else
+            echo "❌ Health check failed with HTTP status: $HTTP_CODE"
+            exit 1
+          fi
+
